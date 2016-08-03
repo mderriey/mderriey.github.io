@@ -29,7 +29,7 @@ Polymer({
  and we bind an array to that property. This is what the DOM could look like:
 
 ```html
-<my-element tasks="[{"id":1,"name":"foo"},{"id":2,"name":"bar"}]"></my-element>
+<my-element tasks='[{"id":1,"name":"foo"},{"id":2,"name":"bar"}]'></my-element>
 ```
 
 This is bad because we may not want to expose all that data directly in the DOM. Plus, there must be some performance overhead associated with the serialisation of the value every time it changes.
@@ -176,7 +176,7 @@ We give the element an input from which it computes some value and returns it ba
 
 ---
 
-#####A small words about braces
+##### A small words about braces
 This is not actually about properties attributes, but I feel like it fits well with the general message of the post.
 
 > My rule of thumb is the following: always use square braces if I don't expect a child-to-host data flow.
