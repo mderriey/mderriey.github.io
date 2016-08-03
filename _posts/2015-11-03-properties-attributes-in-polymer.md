@@ -16,20 +16,21 @@ Let's say we have the following element declaration:
 
 ```javascript
 Polymer({
-    is: 'my-element',
-    properties: {
-        tasks: {
-            type: Array,
-            reflectToAttribute: true
-        }
+  is: 'my-element',
+  properties: {
+    tasks: {
+      type: Array,
+      reflectToAttribute: true
     }
+  }
 });
 ```
 
  and we bind an array to that property. This is what the DOM could look like:
 
 ```html
-<my-element tasks='[{"id":1,"name":"foo"},{"id":2,"name":"bar"}]'></my-element>
+<my-element tasks='[{"id":1,"name":"foo"},{"id":2,"name":"bar"}]'>
+</my-element>
 ```
 
 This is bad because we may not want to expose all that data directly in the DOM. Plus, there must be some performance overhead associated with the serialisation of the value every time it changes.
@@ -59,34 +60,34 @@ Let's see an example:
 
 ```html
 <dom-module id="my-child-element">
-    <template>
-    </template>
-    <script>
-        Polymer({
-            is: 'my-child-element',
-            properties: {
-                notifier: {
-                    type: String,
-                    notify: true
-                }
-            }
-        });
-    </script>
+  <template>
+  </template>
+  <script>
+    Polymer({
+      is: 'my-child-element',
+      properties: {
+        notifier: {
+          type: String,
+          notify: true
+        }
+      }
+    });
+  </script>
 </dom-module>
 
 <dom-module id="my-parent-element">
-    <template>
-        <my-child-element notifier="{{notified}}">
-        </my-child-element>
-    </template>
-    <script>
-        Polymer({
-            is: 'my-parent-element',
-            properties: {
-                notified: String
-            }
-        });
-    </script>
+  <template>
+    <my-child-element notifier="{{notified}}">
+    </my-child-element>
+  </template>
+  <script>
+    Polymer({
+      is: 'my-parent-element',
+      properties: {
+        notified: String
+      }
+    });
+  </script>
 </dom-module>
 ```
 
@@ -96,31 +97,31 @@ Let's now imagine we only want to propagate the value from the host to the child
 
 ```html
 <dom-module id="my-child-element">
-    <template>
-    </template>
-    <script>
-        Polymer({
-            is: 'my-child-element',
-            properties: {
-                destination: String
-            }
-        });
-    </script>
+  <template>
+  </template>
+  <script>
+    Polymer({
+      is: 'my-child-element',
+      properties: {
+        destination: String
+      }
+    });
+  </script>
 </dom-module>
 
 <dom-module id="my-parent-element">
-    <template>
-        <my-child-element destination="[[source]]">
-        </my-child-element>
-    </template>
-    <script>
-        Polymer({
-            is: 'my-parent-element',
-            properties: {
-                source: String
-            }
-        });
-    </script>
+  <template>
+    <my-child-element destination="[[source]]">
+    </my-child-element>
+  </template>
+  <script>
+    Polymer({
+      is: 'my-parent-element',
+      properties: {
+        source: String
+      }
+    });
+  </script>
 </dom-module>
 ```
 
@@ -135,13 +136,13 @@ See this example:
 
 ```javascript
 Polymer({
-    is: 'my-element',
-    properties: {
-        internalState: {
-            type: String,
-            readOnly: true
-        }
+  is: 'my-element',
+  properties: {
+    internalState: {
+      type: String,
+      readOnly: true
     }
+  }
 });
 ```
 
@@ -158,17 +159,17 @@ Now, it's the responsibility of the `iron-media-query` element to determine if t
 
 ```html
 <dom-module id="my-element">
-    <template>
-       <iron-media-query query="(max-width: 768px)" query-matches="{{isSmartphone}}"></iron-media-query>
-    </template>
-    <script>
-        Polymer({
-            is: 'my-element',
-            properties: {
-                isSmartphone: Boolean
-            }
-        });
-    </script>
+  <template>
+     <iron-media-query query="(max-width: 768px)" query-matches="{{isSmartphone}}"></iron-media-query>
+  </template>
+  <script>
+    Polymer({
+      is: 'my-element',
+      properties: {
+        isSmartphone: Boolean
+      }
+    });
+  </script>
 </dom-module>
 ```
 
