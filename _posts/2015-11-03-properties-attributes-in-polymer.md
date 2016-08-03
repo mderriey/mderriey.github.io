@@ -5,7 +5,7 @@ title: Properties attributes in Polymer
 
 I feel like there's a misunderstanding about some of the attributes that we can apply to properties in Polymer. Let's go through them.
 
-#####reflectToAttribute
+##### reflectToAttribute
 This is to me the most misused attribute.
 I haven't been doing Polymer for very long, and I got this one completely wrong at first.
 I thought that in order to have a property bindable, we had to throw this attribute on it. This is wrong, as every property we declare is by default bindable, *except* of course for the ones having the `readOnly` or `computed` attribute.
@@ -13,6 +13,7 @@ I thought that in order to have a property bindable, we had to throw this attrib
 What the `reflectToAttribute` does is instruct Polymer that it has to serialise the property's value to an HTML attribute on the actual HTML element representing our component.
 
 Let's say we have the following element declaration:
+
 ```javascript
 Polymer({
     is: 'my-element',
@@ -24,10 +25,13 @@ Polymer({
     }
 });
 ```
+
  and we bind an array to that property. This is what the DOM could look like:
+
 ```html
 <my-element tasks="[{"id":1,"name":"foo"},{"id":2,"name":"bar"}]"></my-element>
 ```
+
 This is bad because we may not want to expose all that data directly in the DOM. Plus, there must be some performance overhead associated with the serialisation of the value every time it changes.
 
 
@@ -46,12 +50,13 @@ In the associated styles, [here](https://github.com/PolymerElements/paper-button
 
 So most of the time, we won't need that attribute, so I think a good practice - and this applies to the following attribute, too - is not to throw it automatically on every property.
 
-#####notify
+##### notify
 This attribute is often applied to properties without an analysis of whether it's really needed or not. It has to do with child-to-host binding.
 
 > It is useful **only** if we want a parent element to be notified that the property of your component changed, and by the same time update the property of the parent element to which it is bound. I hope that makes sense.
 
 Let's see an example:
+
 ```html
 <dom-module id="my-child-element">
     <template>
@@ -84,9 +89,11 @@ Let's see an example:
     </script>
 </dom-module>
 ```
+
 In this case it makes sense to have `notify: true` on the `notify` property because we want the `notified` property of the parent element to be automatically updated when `notifier` changes. What we have here is a child-to-host data flow. Also notice the use of curly braces in the binding, which are necessary to have the parent element's property updated automatically.
 
 Let's now imagine we only want to propagate the value from the host to the child, that is to the parent to the child element. We can modify our code:
+
 ```html
 <dom-module id="my-child-element">
     <template>
@@ -116,14 +123,16 @@ Let's now imagine we only want to propagate the value from the host to the child
     </script>
 </dom-module>
 ```
+
 The names of the properties were changed so that they still make sense. We now face a host-to-child data flow. Because the `destination` property doesn't have the `notify` attribute, it doesn't make sense to use curly braces anymore, so we swapped them for square ones.
 
 >It's not always easy to figure out if a property will have to let know a parent element that its value has changed, especially when we deal with global components that are used all over the code base. But for some higher level components, let's say at the page level, it's easier to figure out the scope of the properties and apply the `notify` attribute correctly.
 
-#####readOnly
+##### readOnly
 I personally like this attribute and I think I don't use it as often as I could. Applying it to a property prevents that property from being changed via direct assignment or data-binding. Polymer creates under the hood a *private* function that allows the change its value. I say *private* (you should see air quotes, here) because the function is not really private, in the sense that another component could call it.
 
 See this example:
+
 ```javascript
 Polymer({
     is: 'my-element',
@@ -135,6 +144,7 @@ Polymer({
     }
 });
 ```
+
 As stated earlier, the `internalState` property could not be modified with binding or direct assignment, but Polymer created for us a `_setInternalState` function that allows us to change the value of the property. Still, another component could invoke this function, but we know we're badass when we invoke a function starting with an underscore, right?
 
 > This attribute allows us to implicitly state that the value of this property is the sole responsibility of the component it's defined in. But this property could be used by a parent component!
@@ -161,6 +171,7 @@ Now, it's the responsibility of the `iron-media-query` element to determine if t
     </script>
 </dom-module>
 ```
+
 We give the element an input from which it computes some value and returns it back to us, all of that with automatic binding. Easier would be hard to achieve.
 
 ---
@@ -184,4 +195,3 @@ This applies to more places than you'd think:
 
 There is no way we'll get data back in these cases, so why not make it even more obvious by using square braces?
 I don't know if there's actually a performance penalty when using curly braces, but let's play it safe, and the visual cue of the square braces is a good enough reason for me.
-
