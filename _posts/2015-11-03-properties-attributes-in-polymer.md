@@ -47,6 +47,7 @@ Given the property and its value will be represented as an HTML attribute, we ca
 A good example is the `paper-button` and its `raised` property.
 We can see on the [declaration of the raised property](https://github.com/PolymerElements/paper-button/blob/08553a8c5e4d27fc6180bbcfb952f86b38b51345/paper-button.html#L147) that it has the `reflectToAttribute` set to `true`.
 In the associated styles, [here](https://github.com/PolymerElements/paper-button/blob/08553a8c5e4d27fc6180bbcfb952f86b38b51345/paper-button.html#L104) and [there](https://github.com/PolymerElements/paper-button/blob/08553a8c5e4d27fc6180bbcfb952f86b38b51345/paper-button.html#L109), we have specific style rules are applied if the element has the `raised` attribute.
+
 > `Boolean` properties are special because the way Polymer treats them is the following: the attribute will exist only if the value is `true`, and it will have no value - like the common `checked` and `disabled` attributes on `input` - otherwise it won't be present.
 
 So most of the time, we won't need that attribute, so I think a good practice - and this applies to the following attribute, too - is not to throw it automatically on every property.
@@ -127,7 +128,7 @@ Let's now imagine we only want to propagate the value from the host to the child
 
 The names of the properties were changed so that they still make sense. We now face a host-to-child data flow. Because the `destination` property doesn't have the `notify` attribute, it doesn't make sense to use curly braces anymore, so we swapped them for square ones.
 
->It's not always easy to figure out if a property will have to let know a parent element that its value has changed, especially when we deal with global components that are used all over the code base. But for some higher level components, let's say at the page level, it's easier to figure out the scope of the properties and apply the `notify` attribute correctly.
+> It's not always easy to figure out if a property will have to let know a parent element that its value has changed, especially when we deal with global components that are used all over the code base. But for some higher level components, let's say at the page level, it's easier to figure out the scope of the properties and apply the `notify` attribute correctly.
 
 ##### readOnly
 I personally like this attribute and I think I don't use it as often as I could. Applying it to a property prevents that property from being changed via direct assignment or data-binding. Polymer creates under the hood a *private* function that allows the change its value. I say *private* (you should see air quotes, here) because the function is not really private, in the sense that another component could call it.
