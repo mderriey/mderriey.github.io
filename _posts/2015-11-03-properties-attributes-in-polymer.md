@@ -5,7 +5,7 @@ title: Properties attributes in Polymer
 
 I feel like there's a misunderstanding about some of the attributes that we can apply to properties in Polymer. Let's go through them.
 
-##### reflectToAttribute
+### reflectToAttribute
 This is to me the most misused attribute.
 I haven't been doing Polymer for very long, and I got this one completely wrong at first.
 I thought that in order to have a property bindable, we had to throw this attribute on it. This is wrong, as every property we declare is by default bindable, *except* of course for the ones having the `readOnly` or `computed` attribute.
@@ -52,7 +52,7 @@ In the associated styles, [here](https://github.com/PolymerElements/paper-button
 
 So most of the time, we won't need that attribute, so I think a good practice - and this applies to the following attribute, too - is not to throw it automatically on every property.
 
-##### notify
+### notify
 This attribute is often applied to properties without an analysis of whether it's really needed or not. It has to do with child-to-host binding.
 
 > It is useful **only** if we want a parent element to be notified that the property of your component changed, and by the same time update the property of the parent element to which it is bound. I hope that makes sense.
@@ -130,7 +130,7 @@ The names of the properties were changed so that they still make sense. We now f
 
 > It's not always easy to figure out if a property will have to let know a parent element that its value has changed, especially when we deal with global components that are used all over the code base. But for some higher level components, let's say at the page level, it's easier to figure out the scope of the properties and apply the `notify` attribute correctly.
 
-##### readOnly
+### readOnly
 I personally like this attribute and I think I don't use it as often as I could. Applying it to a property prevents that property from being changed via direct assignment or data-binding. Polymer creates under the hood a *private* function that allows the change its value. I say *private* (you should see air quotes, here) because the function is not really private, in the sense that another component could call it.
 
 See this example:
@@ -178,7 +178,7 @@ We give the element an input from which it computes some value and returns it ba
 
 ---
 
-##### A small words about braces
+### A small words about braces
 This is not actually about properties attributes, but I feel like it fits well with the general message of the post.
 
 > My rule of thumb is the following: always use square braces if I don't expect a child-to-host data flow.
