@@ -1,10 +1,9 @@
 <div class="sidebar">
+  <img class="avatar" src="{{ site.baseurl }}public/images/avatar.png" alt="Avatar" />
   <div class="container sidebar-sticky">
     <div class="sidebar-about">
       <h1>
-        <a href="{{ site.baseurl }}">
-          {{ site.title }}
-        </a>
+        {{ site.title }}
       </h1>
     </div>
 
@@ -27,5 +26,14 @@
     </nav>
 
     <p>&copy; {{ site.time | date: '%Y' }} Mickaël Derriey</p>
+
+    <p class="version">
+      Powered by <a href="http://jekyllrb.com">Jekyll</a>
+      and <a href="https://pages.github.com">GitHub Pages</a>
+      <br />
+      Theme based on <a href="http://hyde.getpoole.com">Hyde</a>
+      by <a href="https://twitter.com/mdo">@mdo</a> with modifications
+      by <a href="https://twitter.com/todthomson">@todthomson</a>
+    </p>
   </div>
 </div>

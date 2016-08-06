@@ -107,6 +107,7 @@ h4, h5, h6 {
 p {
   margin-top: 0;
   margin-bottom: 1rem;
+  text-align: justify;
 }
 
 strong {
@@ -216,14 +217,15 @@ blockquote {
   margin: .8rem 0;
   color: #7a7a7a;
   border-left: .25rem solid #e5e5e5;
+  background-color: #f9f9f9;
 }
 blockquote p:last-child {
   margin-bottom: 0;
 }
 @media (min-width: 30em) {
   blockquote {
-    padding-right: 5rem;
     padding-left: 1.25rem;
+    padding-right: 1.25rem;
   }
 }
 
@@ -286,7 +288,6 @@ tbody tr:nth-child(odd) th {
  */
 
 .container {
-  max-width: 38rem;
   padding-left:  1rem;
   padding-right: 1rem;
   margin-left:  auto;
