@@ -76,8 +76,31 @@ html {
 }
 
 /* Avatar */
-.sidebar .avatar {
+.avatar-wrapper {
+  text-align: center;
+}
+
+.avatar {
   border-radius: 50%;
+  display: inline-block;
+  height: 100%;
+  margin: 0;
+  max-width: 172px;
+  padding: 20px;
+  text-align: center;
+  width: 100%;
+}
+
+@media (min-width: 48rem) and (min-height: 690px) {
+  .avatar {
+    max-width: 258px;
+  }
+}
+
+@media (min-width: 58rem) and (min-height: 780px) {
+  .avatar {
+    max-width: 100%;
+  }
 }
 
 /* About section */
