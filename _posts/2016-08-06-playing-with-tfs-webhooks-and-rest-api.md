@@ -61,11 +61,8 @@ The base class defines [multiple virtual methods](https://github.com/aspnet/WebH
 
 If the pull request matches our criteria, we can queue a new build by calling the [TFS REST API](https://www.visualstudio.com/en-us/docs/integrate/api/overview).
 
-Again, I was thinking of using the `HttpClient` class to do so, but there's an official [.NET client library](https://www.visualstudio.com/en-us/docs/integrate/get-started/client-libraries/dotnet). Several NuGet packages must be installed in this case:
-
- - `Microsoft.TeamFoundationServer.Client`
- - `Microsoft.VisualStudio.Services.Client`
- - `Microsoft.VisualStudio.Services.InteractiveClient`
+Again, I was thinking of using the `HttpClient` class to do so, but there's an official [.NET client library](https://www.visualstudio.com/en-us/docs/integrate/get-started/client-libraries/dotnet).
+Several NuGet packages must be installed in this case: `Microsoft.TeamFoundationServer.Client`, `Microsoft.VisualStudio.Services.Client` and `Microsoft.VisualStudio.Services.InteractiveClient`.
 
 The .NET API is not very discoverable, and the documentation is here very sparse, but queuing a build is easy
 
