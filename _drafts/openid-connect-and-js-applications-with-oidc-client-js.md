@@ -143,4 +143,5 @@ $('.js-logout').on('click', function () {
 ```
 
 As you can see, using the library is very easy.
-Using TypeScript? You're covered as the library also comes with [a definition file](https://github.com/IdentityModel/oidc-client-js/blob/464d01c2d89a90ac41d8253d835a5a3c2e18cfbd/oidc-client.d.ts).
+It's also worth to mention that if you're using TypeScript, you're covered as the library also comes with [a definition file](https://github.com/IdentityModel/oidc-client-js/blob/464d01c2d89a90ac41d8253d835a5a3c2e18cfbd/oidc-client.d.ts).
+If you want to try using `oidc-client-js`, the [Identity Server JS walkthrough](https://identityserver.github.io/Documentation/docsv2/overview/jsGettingStarted.html) has been updated to use it.
