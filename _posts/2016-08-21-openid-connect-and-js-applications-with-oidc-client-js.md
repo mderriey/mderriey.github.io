@@ -1,9 +1,11 @@
 ---
 layout: post
 title: OpenID Connect and JS applications with `oidc-client-js`
+description: How to delegate authentication and authorisation of a JS application to an OpenID Connect server
+image: /public/images/posts/3/openid-connect.png
 ---
 
-![OpenID Connect]({{ site.baseurl}}public/images/posts/3/openid-connect.png)
+![OpenID Connect](/public/images/posts/3/openid-connect.png)
 
 I've been using OpenID Connect for some time now.
 OIDC is a specification built on top of OAuth 2 to which it adds authentication capabilities, where OAuth only provides autorisation.

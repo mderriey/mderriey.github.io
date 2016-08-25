@@ -4,6 +4,7 @@ highlighter:      rouge
 
 gems:
   - jekyll-paginate
+  - jekyll-seo-tag
 
 # Permalinks
 permalink:        pretty
@@ -11,11 +12,13 @@ permalink:        pretty
 # Setup
 title:            "Mickaël Derriey's blog"
 url:              https://mderriey.github.io
-baseurl:          /
 
-author:
-  name:           'Mickaël Derriey'
-  url:            https://twitter.com/mderriey
+author:           'Mickaël Derriey'
+
+twitter:
+  username:       mderriey
+
+logo:             /public/css/avatar.png
 
 paginate:         5
 

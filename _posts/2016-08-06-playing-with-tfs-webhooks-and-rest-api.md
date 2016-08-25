@@ -1,9 +1,11 @@
 ---
 layout: post
 title: Playing with TFS webhooks and REST API
+description: Improving Continuous Integration with TFS WebHooks and its REST API
+image: /public/images/posts/2/webhooks.png
 ---
 
-![WebHooks]({{ site.baseurl}}public/images/posts/2/webhooks.jpg)
+![WebHooks](/public/images/posts/2/webhooks.jpg)
 
 I'm working on a project that contains 100+ git repositories. They are linked in the sense that the *main* repository has dependencies on the other ones.
 
