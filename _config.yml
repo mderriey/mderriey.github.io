@@ -4,7 +4,6 @@ highlighter:      rouge
 
 gems:
   - jekyll-paginate
-  - jekyll-seo-tag
 
 # Permalinks
 permalink:        pretty
