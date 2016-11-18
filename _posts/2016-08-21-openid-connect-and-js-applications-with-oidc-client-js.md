@@ -2,7 +2,6 @@
 layout: post
 title: OpenID Connect and JS applications with `oidc-client-js`
 description: How to delegate authentication and authorisation of a JS application to an OpenID Connect server
-image: /public/images/posts/3/openid-connect.png
 ---
 
 ![OpenID Connect](/public/images/posts/3/openid-connect.png)

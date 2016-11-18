@@ -2,7 +2,6 @@
 layout: post
 title: Playing with TFS webhooks and REST API
 description: Improving Continuous Integration with TFS WebHooks and its REST API
-image: /public/images/posts/2/webhooks.png
 ---
 
 ![WebHooks](/public/images/posts/2/webhooks.jpg)
