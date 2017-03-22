@@ -10,13 +10,15 @@
     {% assign seo_type = "WebPage" %}
 {% endif %}
 
-<title>{{ page.title }}</title>
+{% assign page_title = page.title | append:" | " | append: site.title %}
+
+<title>{{ page_title }}</title>
 <meta name="description" content="{{ page.description | default: site.title}}">
-<meta property="og:title" content="{{ page.title }}">
+<meta property="og:title" content="{{ page_title }}">
 <link rel="canonical" href="{{ page.url | absolute_url }}">
 <meta property="og:url" content="{{ page.url | absolute_url }}">
 <meta property="og:site_name" content="{{ site.title }}">
-<meta name="twitter:title" content="{{ page.title }}">
+<meta name="twitter:title" content="{{ page_title }}">
 <meta name="twitter:image" content="{{ site.url }}/public/images/avatar.png">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:site" content="@{{ site.twitter.username | replace:"@","" }}">
@@ -27,7 +29,7 @@
     "@context": "http://schema.org",
     "@type": "{{ seo_type }}",
     "name": "{{ site.title }}",
-    "headline": "{{ page.title }}",
+    "headline": "{{ page_title }}",
     "logo": "{{ site.url }}/public/images/avatar.png",
     "url": "{{ page.url | absolute_url }}"
   }
