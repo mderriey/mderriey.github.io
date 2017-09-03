@@ -37,7 +37,7 @@ Unfortunately, at the time of writing, neither do constructors nor `IDisposable`
 Fortunately, xUnit has us covered with a special interface.
 Its declaration is very simple (see [the official one](https://github.com/xunit/xunit/blob/master/src/xunit.core/IAsyncLifetime.cs)):
 
-```C#
+```csharp
 public interface IAsyncLifetime
 {
     Task InitializeAsync();
@@ -57,7 +57,7 @@ He decided, after porting it to .NET Standard 2.0, [to make the `Reset` method a
 
 This was the perfect opportunity to use `IAsyncLifetime`, and because <span style="text-decoration: line-through">a picture</span> some code is worth a thousand words:
 
-```C#
+```csharp
 public class TestClass : IAsyncLifetime
 {
     private readonly string _connectionString;
