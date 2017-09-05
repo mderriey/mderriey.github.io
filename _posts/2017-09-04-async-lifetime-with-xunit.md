@@ -14,11 +14,11 @@ They allow you to execute operations at different times, usually on 3 different 
 
 The first one, the _test level_, is also the most fine-grained one as it lets you run code before and after every test in a class.
 I tend to use this lifecycle event when I need a clean state for every test.
-In this case, I would create a new instance of the <abbr title="System Under Test">SUT</abbr>..
+In this case, I would create a new instance of the <abbr title="System Under Test">SUT</abbr>.
 
 The second level is the _class_ or _fixture level_.
 Like its name implies, this gives you a chance to execute operations before the first and after the last test of a specific test class.
-This is useful when you have all the tests of a single test class to share some common state.
+This is useful when you want to have all the tests of a single test class to share some common state.
 While I don't use it as often as the two others, a good use case for this one would be when I test a class that doesn't hold any state, so creating new instances for each test wouldn't add any value.
 
 The last one, I'll call the _suite level_; this one allows you to run some code before the first test and after the last test of the whole suite.
@@ -32,7 +32,7 @@ xUnit supports all these options, and you can read about how to use them on [the
 
 One thing you'll notice is that initialisation and cleanup mechanics fit the .NET semantics; the former is done in the constructor of the class, the latter by optionally implementing the `IDisposable` interface.
 
-Unfortunately, at the time of writing, neither do constructors nor `IDisposable` support asynchronous, `Task`-based, operations without somehow blocking the running thread.
+Unfortunately, at the time of writing, neither do constructors nor `IDisposable` support asynchronous, `Task`-based operations without somehow blocking the running thread.
 
 ## `IAsyncLifetime` to the rescue
 
