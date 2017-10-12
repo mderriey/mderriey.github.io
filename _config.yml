@@ -17,7 +17,7 @@ author:           'Mickaël Derriey'
 twitter:
   username:       mderriey
 
-logo:             /public/images/avatar.png
+logo:             https://s.gravatar.com/avatar/5b8f496ea22d34aee405458d7f8531d2?s=400
 
 paginate:         5
 
