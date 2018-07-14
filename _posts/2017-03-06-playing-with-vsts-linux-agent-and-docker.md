@@ -81,7 +81,7 @@ and here's the JSON file:
 
 The goal is then to create an environment variable with the name `OrientDB:Host` and  set it to the IP address of the OrientDB container. We saw that getting the IP was easy, but how do we create an environment variable as part of the build? VSTS has the concept of [logging commands](https://github.com/Microsoft/vsts-tasks/blob/master/docs/authoring/commands.md). Emitting specific text through the standard output means VSTS will parse that output and react appropriately. One of these commands can create an environment variable, the format is the following:
 
-`##vso[task.setvariable variable=<variable-name>;<variable-value>`
+`##vso[task.setvariable variable=<variable-name>;]<variable-value>`
 
 The solution was then to include a [bash script](https://www.visualstudio.com/en-us/docs/build/steps/utility/shell-script) task in the CI build - remember, this is a Linux agent we're running on - to get the IP and output the appropriate logging command. Overall it looks something like:
 
