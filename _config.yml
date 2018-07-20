@@ -5,6 +5,8 @@ highlighter:      rouge
 plugins:
   - jekyll-paginate
 
+exclude: [bundle]
+
 # Permalinks
 permalink:        pretty
 
