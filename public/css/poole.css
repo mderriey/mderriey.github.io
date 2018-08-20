@@ -235,6 +235,21 @@ img {
   border-radius: 5px;
 }
 
+figure {
+  margin: 0 0 1rem;
+}
+
+figure > img {
+  border: 1px solid #e5e5e5;
+  margin: 0;
+  margin-bottom: .25rem;
+}
+
+figure > figcaption {
+  font-size: .75rem;
+  color: #7a7a7a;
+}
+
 /* Tables */
 table {
   margin-bottom: 1rem;
