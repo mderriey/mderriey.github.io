@@ -36,7 +36,7 @@ Going back to the VSTS task, here's the property that allows you to install the 
 
 <figure>
   <img src="/public/images/posts/2018-08-20/enable-prerequisites.png" alt="Install the VSTS deployment group agent on VMs">
-  <figcaption>The setting that allows to install the deployment group agent on VMs</figcaption>
+  <figcaption>The setting that drives the installation of the deployment group agent on VMs</figcaption>
 </figure>
 
 After selecting that option, we're prompted to fill in a few additional properties:
