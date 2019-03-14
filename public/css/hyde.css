@@ -132,6 +132,19 @@ a.sidebar-nav-item:focus {
   font-weight: bold;
 }
 
+/* Sidebar social */
+.sidebar-social {
+  margin-bottom: 1rem;
+  padding: 0;
+  list-style-type: none;
+}
+.sidebar-social-item {
+  font-size: 1.5rem;
+}
+.sidebar-social-item:not(:last-child) {
+  margin-right: 1rem;
+}
+
 /* Sticky sidebar
  *
  * Add the `sidebar-sticky` class to the sidebar's container to affix it the
