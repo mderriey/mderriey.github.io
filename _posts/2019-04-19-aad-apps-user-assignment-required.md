@@ -1,7 +1,7 @@
 ---
 layout: post
-title: The consequences of enabling the "user assignment required" option in AAD apps
-description: What consequences does turning the "user assignment required" option have on applications?
+title: The consequences of enabling the 'user assignment required' option in AAD apps
+description: What consequences does turning the 'user assignment required' option have on applications?
 ---
 
 # Introduction
