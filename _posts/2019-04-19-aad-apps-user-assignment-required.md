@@ -34,7 +34,7 @@ There are several ways to assign someone to the application. I typically use the
 
 ### 2. Nested groups are not supported
 
-This is the first surpise we had. It's our bad, because it's well documented on that documentation page in the "Important" note: https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/groups-saasapps
+This is the first surpise we had. It's our bad, because it's well documented on that documentation page in the "Important" note: [https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/groups-saasapps](https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/groups-saasapps)
 
 In other words, if you assign a group to an application, only the direct members of that group will gain access to the application. So instead of using our top-level "all employees" type of group, we had to assign several lower-level groups which only had people inside of them.
 
