@@ -4,6 +4,7 @@ highlighter:      rouge
 
 plugins:
   - jekyll-paginate
+  - jekyll-feed
 
 exclude: [bundle]
 
@@ -22,6 +23,9 @@ twitter:
 logo:             https://s.gravatar.com/avatar/5b8f496ea22d34aee405458d7f8531d2?s=400
 
 paginate:         5
+
+feed:
+  path:           atom.xml
 
 # Custom vars
 version:          2.1.0
