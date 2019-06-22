@@ -12,7 +12,7 @@ In this post we'll go through an example of that behaviour, discover where that 
 
 ### An example
 
-If you use OpenID Connect- or OAuth2-based authentication in your application, there's a high chance ths is happening, potentially without you knowing, because it's the default behaviour.
+If you use OpenID Connect- or OAuth2-based authentication in your application, there's a high chance this is happening, potentially without you knowing, because it's the default behaviour.
 
 Let's imagine we have an ASP.NET Core application using OpenID Connect to authenticate its users against an OIDC identity provider.
 
