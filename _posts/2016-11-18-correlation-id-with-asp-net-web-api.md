@@ -72,11 +72,11 @@ namespace WebApi.CorrelationId.MessageHandlers
 {
     public class AddCorrelationIdToLogContextHandler : DelegatingHandler
     {
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             using (LogContext.PushProperty("CorrelationId", request.GetCorrelationId()))
             {
-                return base.SendAsync(request, cancellationToken);
+                return await base.SendAsync(request, cancellationToken);
             }
         }
     }
