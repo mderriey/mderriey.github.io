@@ -6,7 +6,7 @@ description: A deep dive into how ASP.NET Core MVC works around Newtonsoft.Json 
 
 # Introduction
 
-We have an internal application at work that sends big payloads to the browser, around 25MB.
+We have an internal application at work that sends large payloads to the browser, approximately 25MB.
 
 We know it's a lot, and it's on our radar to do something about it.
 In this article, we'll go through the investigation we performed, and how we ultimately brought that the response time of this specific endpoint from 20+ seconds down to 4 seconds.
