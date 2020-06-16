@@ -13,15 +13,15 @@ In this article, we'll go through the investigation we performed, and how we ult
 
 ## The problem we faced
 
-We run this application on Azure App Service, and that endpoint had always been slow, and I personally assumed that it was due to the amount of data it was returning, until one day for testing purposes I ran the app locally and noticed that it was much faster, between 6 and 7 seconds.
+We run this application on an Azure App Service, and the offending endpoint had always been slow, and I personally assumed that it was due to the amount of data it was returning, until one day for testing purposes I ran the app locally and noticed that it was much faster, between 6 and 7 seconds.
 
 To make sure we were not comparing apples to oranges, we made sure that the conditions were as similar as they can be:
 
-- We were running the same version of the app &mdash; that is, same Git commit, we didn't go as far as running the exact same binaries;
+- We were running the same version of the app &mdash; that is, the same Git commit, we didn't go as far as running the exact same binaries;
 - The apps were connecting to the same Azure SQL databases; and
 - They were also using the same instance of Azure Cache for Redis.
 
-The one big difference that we could see is that our dev laptops are much more powerful in regards to the CPU, the amount of RAM or the speed of the storage.
+The one big difference that we could see was that our dev laptops are much more powerful in regards to the CPU, the amount of RAM or the speed of the storage.
 
 ## The investigation
 
@@ -29,7 +29,7 @@ What could explain that this endpoint took roughly 3 times less to execute when 
 
 To be perfectly honest, I can't remember exactly what pointed me in this direction, but at some point I realised two things:
 
-1. Starting with ASP.NET Core 3.0, synchronous I/O is disabled by default, meaning an exception will be thrown if you try to read the request body or write to the response body in a synchronous, blocking way; see the [official docs](https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnetcore#http-synchronous-io-disabled-in-all-servers) for more details on that; and
+1. Starting with ASP.NET Core 3.0, synchronous I/O is disabled by default, meaning an exception will be thrown, if you try to read the request body or write to the response body in a synchronous, blocking way; see the [official docs](https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnetcore#http-synchronous-io-disabled-in-all-servers) for more details on that; and
 1. Newtonsoft.Json, also known as JSON.NET, is synchronous. The app used it as the new System.Text.Json stack didn't exist when it was migrated from ASP.NET Classic to ASP.NET Core.
 
 How then did the framework manage to use a synchronous formatter while the default behaviour is to disable synchronous I/O, all without throwing exceptions?
