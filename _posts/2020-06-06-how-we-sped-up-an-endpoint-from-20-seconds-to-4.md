@@ -89,20 +89,20 @@ public Task<IActionResult> Action()
 Making both of those changes is required because:
 
 1. Only suppressing output buffering would throw an exception, since we'd be synchronously writing to the response body, while it's disabled by default;
-1. Only allow synchronous I/O wouldn't change anything, as output buffering is enabled by default, so that updating projects to ASP.NET Core 3.0 doesn't break when using Newtonsoft.Json and sending responses bigger than 32kB.
+1. Only allow synchronous I/O wouldn't change anything, as output buffering is enabled by default, so that updating projects to ASP.NET Core 3.0 doesn't break when using Newtonsoft.Json and sending responses larger than 32kB.
 
-Locally, I observed a response time of ~4 seconds, which was a nice ~30% improvement.
+Locally, I observed a response time of ~4 seconds, which was a substantial improvement of ~30%.
 
 While it was a good sign that our hypothesis was correct, we didn't want to ship this version.
 Our application doesn't get that much traffic, but synchronous I/O should be avoided if possible, as it is a blocking operation that can lead to thread starvation.
 
-## Solution #2, more involed, and more sustainable
+## Solution #2, more involved, and more sustainable
 
 The second option was to remove the dependency on Newtonsoft.Json, and use the new System.Text.Json serialiser.
 The latter is async friendly, meaning it can write directly to the response stream, without an intermediary.
 
 It wasn't as easy as swapping serialisers, as at the time of writing System.Text.Json is not at feature parity with Newtonsoft.Json.
-My opinion is that it's totally understable as JSON.NET has been around for ages.
+My opinion is that it's totally understandable as JSON.NET has been around for ages.
 
 Microsoft provides a good and honest comparison between the two frameworks: <https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-migrate-from-newtonsoft-how-to>
 
