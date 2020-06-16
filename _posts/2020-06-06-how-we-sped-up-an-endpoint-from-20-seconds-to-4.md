@@ -29,10 +29,10 @@ What could explain that this endpoint took roughly 3 times less to execute when 
 
 To be perfectly honest, I can't remember exactly what pointed me in this direction, but at some point I realised two things:
 
-1. Starting with ASP.NET Core 3.0, synchronous I/O is disabled by default, meaning an exception will be thrown if you try to read the request body or write to the response body in a synchronous, blocking way; see the [official docs](https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnetcore#http-synchronous-io-disabled-in-all-servers) for more details on that;
+1. Starting with ASP.NET Core 3.0, synchronous I/O is disabled by default, meaning an exception will be thrown if you try to read the request body or write to the response body in a synchronous, blocking way; see the [official docs](https://docs.microsoft.com/en-us/dotnet/core/compatibility/aspnetcore#http-synchronous-io-disabled-in-all-servers) for more details on that; and
 1. Newtonsoft.Json, also known as JSON.NET, is synchronous. The app used it as the new System.Text.Json stack didn't exist when it was migrated from ASP.NET Classic to ASP.NET Core.
 
-How then did the framework managed to use a synchronous formatter while the default behaviour is to disable synchronous I/O, all without throwing exceptions?
+How then did the framework manage to use a synchronous formatter while the default behaviour is to disable synchronous I/O, all without throwing exceptions?
 
 I love reading code, it was then a great excuse for me to go have a look at the implementation.
 Following the function calls from [`AddNewtonsoftJson`](https://source.dot.net/#Microsoft.AspNetCore.Mvc.NewtonsoftJson/DependencyInjection/NewtonsoftJsonMvcBuilderExtensions.cs,abf21e3df206c817,references), we end up in the [`NewtonsoftJsonMvcOptionsSetup`](https://source.dot.net/#Microsoft.AspNetCore.Mvc.NewtonsoftJson/DependencyInjection/NewtonsoftJsonMvcOptionsSetup.cs,62) where we can see how we replace the System.Text.Json-based formatter for the one based on Newtonsoft.Json.
@@ -42,7 +42,7 @@ Instead of writing directly to the response body, the JSON.NET serializer writes
 
 The XML docs of [`FileBufferingWriteStream`](https://github.com/dotnet/aspnetcore/blob/a9449cd20c2150917355d8ba7a30fa19b47569f7/src/Http/WebUtilities/src/FileBufferingWriteStream.cs) explain it perfectly:
 
-> A Stream that buffers content to be written to disk.  
+> A Stream that buffers content to be written to disk.
 > Use `DrainBufferAsync(Stream, CancellationToken)` to write buffered content to a target Stream.
 
 That Stream implementation will hold the data in memory while it's smaller than 32kB; any bigger than that and it stores it in a temporary file.
