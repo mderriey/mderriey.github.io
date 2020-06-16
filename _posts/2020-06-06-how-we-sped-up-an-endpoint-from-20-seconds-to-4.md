@@ -106,9 +106,9 @@ My opinion is that it's totally understandable as JSON.NET has been around for a
 
 Microsoft provides a good and honest comparison between the two frameworks: <https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-migrate-from-newtonsoft-how-to>
 
-The main thing for us was that System.Text.Json doesn't support ignoring properties with default values, like `0` for integers, for example.
-We couldn't just ignore this, because the payload is already so big, adding unnecessary properties to it would have made it even bigger.
-Luckily, the workaround was relatively straightforward and [well documented](https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-migrate-from-newtonsoft-how-to#conditionally-ignore-a-property): we needed to write custom converter, which gave us total control over which properties were serialised.
+The main thing for us was that System.Text.Json doesn't support ignoring properties with default values. For example: like `0` for integers.
+We couldn't just ignore this, because the payload is already so large, adding unnecessary properties to it would have made it even larger.
+Luckily, the workaround was relatively straightforward and [well documented](https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-migrate-from-newtonsoft-how-to#conditionally-ignore-a-property): we needed to write a custom converter, which gave us total control over which properties were serialised.
 
 It was boring, plumbing code to write, but it was easy.
 
@@ -136,7 +136,7 @@ public void ConfigureServices(IServiceCollection services)
 ```
 
 We gave it another go, and again achieved a consistent 4-second response time on that endpoint 🎉.
-After deploying this new version to App Service, we were stoked to see a similar response time there as well.
+After deploying this new version to our App Service, we were stoked to see a similar response time there as well.
 
 ![App Insights timings](/public/images/posts/2020-06-06-how-we-sped-up-an-endpoint-from-20-seconds-down-to-4/app-insights-timings.png)
 
