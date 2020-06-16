@@ -18,10 +18,10 @@ We run this application on Azure App Service, and that endpoint had always been 
 To make sure we were not comparing apples to oranges, we made sure that the conditions were as similar as they can be:
 
 - We were running the same version of the app &mdash; that is, same Git commit, we didn't go as far as running the exact same binaries;
-- The apps were connecting to the same Azure SQL databases;
+- The apps were connecting to the same Azure SQL databases; and
 - They were also using the same instance of Azure Cache for Redis.
 
-The one big difference that we could see is that our dev laptops are much more powerful with regards to the CPU, the amount of RAM or the speed of the storage.
+The one big difference that we could see is that our dev laptops are much more powerful in regards to the CPU, the amount of RAM or the speed of the storage.
 
 ## The investigation
 
