@@ -9,11 +9,11 @@ description: A deep dive into how ASP.NET Core MVC works around Newtonsoft.Json 
 We have an internal application at work that sent large payloads to the browser, approximately 25MB.
 
 We knew it was a problem and it was on our radar to do something about it.
-In this article, we'll go through the investigation we performed, and how we ultimately brought that the response time of this specific endpoint from 20+ seconds down to 4 seconds.
+In this article, we'll go through the investigation we performed, and how we ultimately brought the response time of this specific endpoint from 20+ seconds down to 4 seconds.
 
 ## The problem we faced
 
-We run this application on an Azure App Service, and the offending endpoint had always been slow, and I personally assumed that it was due to the amount of data it was returning, until one day for testing purposes I ran the app locally and noticed that it was much faster, between 6 and 7 seconds.
+We run this application on an Azure App Service, and the offending endpoint had always been slow, and I personally assumed that it was due to the amount of data it was returning, until one day for testing purposes, I ran the app locally and noticed that it was much faster, between 6 and 7 seconds.
 
 To make sure we were not comparing apples to oranges, we made sure that the conditions were as similar as they can be:
 
@@ -34,7 +34,7 @@ To be perfectly honest, I can't remember exactly what pointed me in this directi
 
 How then did the framework manage to use a synchronous formatter while the default behaviour is to disable synchronous I/O, all without throwing exceptions?
 
-I love reading code, it was then a great excuse for me to go have a look at the implementation.
+I love reading code, it was then a great excuse for me to go and have a look at the implementation.
 Following the function calls from [`AddNewtonsoftJson`](https://source.dot.net/#Microsoft.AspNetCore.Mvc.NewtonsoftJson/DependencyInjection/NewtonsoftJsonMvcBuilderExtensions.cs,abf21e3df206c817,references), we end up in the [`NewtonsoftJsonMvcOptionsSetup`](https://source.dot.net/#Microsoft.AspNetCore.Mvc.NewtonsoftJson/DependencyInjection/NewtonsoftJsonMvcOptionsSetup.cs,62) where we can see how we replace the System.Text.Json-based formatter for the one based on Newtonsoft.Json.
 
 That specific formatter reveals it's performing some Stream gymnastics &mdash; see [the code on GitHub](https://github.com/dotnet/aspnetcore/blob/release/3.1/src/Mvc/Mvc.NewtonsoftJson/src/NewtonsoftJsonOutputFormatter.cs#L134-L165).
@@ -45,12 +45,12 @@ The XML docs of [`FileBufferingWriteStream`](https://github.com/dotnet/aspnetcor
 > A Stream that buffers content to be written to disk.
 > Use `DrainBufferAsync(Stream, CancellationToken)` to write buffered content to a target Stream.
 
-That Stream implementation will hold the data in memory while it's smaller than 32kB; any bigger than that and it stores it in a temporary file.
+That Stream implementation will hold the data in memory while it's smaller than 32kB; any larger than that and it stores it in a temporary file.
 
-If my investigation is correct, the response body is written [in blocks of 16kB](https://github.com/dotnet/aspnetcore/blob/a9449cd20c2150917355d8ba7a30fa19b47569f7/src/Mvc/Mvc.Core/src/Infrastructure/MemoryPoolHttpResponseStreamWriterFactory.cs#L28).
-Quick math operation: 25MB written in 16kB blocks = 1,600 operations, 1,598 of which involve the file system. Eek!
+If my investigation was correct, the response body would've been written [in blocks of 16kB](https://github.com/dotnet/aspnetcore/blob/a9449cd20c2150917355d8ba7a30fa19b47569f7/src/Mvc/Mvc.Core/src/Infrastructure/MemoryPoolHttpResponseStreamWriterFactory.cs#L28).
+A quick math operation would show: 25MB written in 16kB blocks = 1,600 operations, 1,598 of which involve the file system. Eek!
 
-That could explain why the endpoint was executing so much quicker on my dev laptop than on App Service; while my laptop has an SSD with near-immediate access times and super quick read/write operations, our current App Service Plan still runs with spinning disks!
+This could explain why the endpoint was executing so much quicker on my dev laptop than on the live App Service; while my laptop has an SSD with near-immediate access times and super quick read/write operations, our current App Service Plan still runs with spinning disks!
 
 How can we verify whether our hypothesis is correct?
 
@@ -99,7 +99,7 @@ Our application doesn't get that much traffic, but synchronous I/O should be avo
 ## Solution #2, more involved, and more sustainable
 
 The second option was to remove the dependency on Newtonsoft.Json, and use the new System.Text.Json serialiser.
-The latter is async friendly, meaning it can write directly to the response stream, without an intermediary.
+The latter is async friendly, meaning it can write directly to the response stream, without an intermediary buffer.
 
 It wasn't as easy as swapping serialisers, as at the time of writing System.Text.Json is not at feature parity with Newtonsoft.Json.
 My opinion is that it's totally understandable as JSON.NET has been around for ages.
