@@ -101,8 +101,8 @@ Our application doesn't get that much traffic, but synchronous I/O should be avo
 The second option was to remove the dependency on Newtonsoft.Json, and use the new System.Text.Json serialiser.
 The latter is async friendly, meaning it can write directly to the response stream, without an intermediary buffer.
 
-It wasn't as easy as swapping serialisers, as at the time of writing System.Text.Json is not at feature parity with Newtonsoft.Json.
-My opinion is that it's totally understandable as JSON.NET has been around for ages.
+It wasn't as easy as swapping serialisers, as at the time of writing System.Text.Json it was not at feature parity with Newtonsoft.Json.
+My opinion is that it's totally understandable as JSON.NET has been available far longer.
 
 Microsoft provides a good and honest comparison between the two frameworks: <https://docs.microsoft.com/en-us/dotnet/standard/serialization/system-text-json-migrate-from-newtonsoft-how-to>
 
