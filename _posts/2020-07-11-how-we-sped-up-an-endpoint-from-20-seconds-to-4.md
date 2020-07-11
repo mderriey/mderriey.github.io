@@ -4,11 +4,13 @@ title: How we sped up an ASP.NET Core endpoint from 20+ seconds down to 4 second
 description: A deep dive into how ASP.NET Core MVC works around Newtonsoft.Json being synchronous.
 ---
 
+_This post has initially been published on the Telstra Purple blog at <https://purple.telstra.com/blog/how-we-sped-up-an-aspnet-core-endpoint-from-20-seconds-down-to-4-seconds>._
+
 # Introduction
 
-We have an internal application at work that sent large payloads to the browser, approximately 25MB.
+We have an internal application at work that sends large payloads to the browser, approximately 25MB.
 
-We knew it was a problem and it was on our radar to do something about it.
+We know it is a problem and it is on our radar to do something about it.
 In this article, we'll go through the investigation we performed, and how we ultimately brought the response time of this specific endpoint from 20+ seconds down to 4 seconds.
 
 ## The problem we faced
