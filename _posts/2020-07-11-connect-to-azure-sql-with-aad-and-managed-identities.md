@@ -58,7 +58,7 @@ private static async Task<string> GetAzureSqlAccessToken()
 As previously mentioned, the connection string doesn't contain a username or a password, but an access token.
 
 Acquiring the token is done with the help of the [Azure.Identity NuGet package](https://www.nuget.org/packages/Azure.Identity/) through the `DefaultAzureCredential` class.
-The killer feature of that class is that it tries to acquire an access token from different sources, including:
+The killer feature of that class is, that it tries to acquire an access token from different sources, including:
 
 - Using credentials exposed through environment variables;
 - Using credentials of an Azure Managed Identity;
