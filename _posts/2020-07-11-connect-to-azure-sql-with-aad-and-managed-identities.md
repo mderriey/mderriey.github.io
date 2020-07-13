@@ -9,9 +9,9 @@ description: How to connect to Azure SQL with AAD authentication and Managed Ide
 We're trying to improve the security posture of our internal applications.
 
 One aspect of this is how we deal with sensitive information, like database connection strings, API keys, or AAD client secrets.
-The approach we're using is to store those in Key Vault instances, which can be accessed by the applications thanks to Azure Managed Identities.
+The approach we're using is to store those in Key Vault instances, which can be accessed by the applications that require them, thanks to Azure Managed Identities.
 
-In the case of Azure SQL, however, instead of storing the connection string in Key Vault, we've started using Managed Identities as well.
+In the case of Azure SQL, however, instead of storing the connection string in Key Vault, we've also started using Managed Identities.
 Instead of having a connection string with a SQL username and password, we use the application's identity to connect to Azure SQL directly.
 We think this is more secure, because the less sensitive information to protect, the less chance of them being accessed by unauthorised parties.
 
