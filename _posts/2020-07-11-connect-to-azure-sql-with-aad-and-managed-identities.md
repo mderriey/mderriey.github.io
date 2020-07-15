@@ -132,17 +132,17 @@ public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
         var connectionStringBuilder = new SqlConnectionStringBuilder(sqlConnection.ConnectionString);
         if (connectionStringBuilder.DataSource.Contains("database.windows.net", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(connectionStringBuilder.UserID))
         {
-            sqlConnection.AccessToken = await GetAzureSqlAccessToken();
+            sqlConnection.AccessToken = await GetAzureSqlAccessToken(cancellationToken);
         }
 
         return await base.ConnectionOpeningAsync(connection, eventData, result, cancellationToken);
     }
 
-    private static async Task<string> GetAzureSqlAccessToken()
+    private static async Task<string> GetAzureSqlAccessToken(CancellationToken cancellationToken)
     {
         // See https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/services-support-managed-identities#azure-sql
         var tokenRequestContext = new TokenRequestContext(new[] { "https://database.windows.net//.default" });
-        var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext);
+        var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, cancellationToken);
 
         return tokenRequestResult.Token;
     }
@@ -255,7 +255,7 @@ public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
         {
             try
             {
-                sqlConnection.AccessToken = await GetAzureSqlAccessToken();
+                sqlConnection.AccessToken = await GetAzureSqlAccessToken(cancellationToken);
                 _logger.LogInformation("Successfully acquired a token to connect to Azure SQL");
             }
             catch (Exception e)
@@ -271,7 +271,7 @@ public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
         return await base.ConnectionOpeningAsync(connection, eventData, result, cancellationToken);
     }
 
-    private static async Task<string> GetAzureSqlAccessToken()
+    private static async Task<string> GetAzureSqlAccessToken(CancellationToken cancellationToken)
     {
         if (RandomNumberGenerator.GetInt32(10) >= 5)
         {
@@ -280,7 +280,7 @@ public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
 
         // See https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/services-support-managed-identities#azure-sql
         var tokenRequestContext = new TokenRequestContext(new[] { "https://database.windows.net//.default" });
-        var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext);
+        var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, cancellationToken);
 
         return tokenRequestResult.Token;
     }
