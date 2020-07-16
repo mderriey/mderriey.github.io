@@ -16,7 +16,7 @@ Instead of using a connection string that contains a username and a password, we
 
 1. If not done already, assign a managed identity to the application in Azure;
 1. Grant the necessary permissions to this identity on the target Azure SQL database;
-1. Acquire a token from Azure Active Directory, and use it to initiate the connection to the database.
+1. Acquire a token from Azure Active Directory, and use it to establish the connection to the database.
 
 The main benefit comes from the fact that we don't need to manage and protect the credentials required to connect to the database.
 We think this is more secure, because the less sensitive information to protect, the less chance of them being accessed by unauthorised parties.
