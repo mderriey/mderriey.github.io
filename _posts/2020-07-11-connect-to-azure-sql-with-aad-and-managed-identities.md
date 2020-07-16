@@ -9,7 +9,7 @@ description: How to connect to Azure SQL with AAD authentication and Azure manag
 We're trying to improve the security posture of our internal applications.
 
 One aspect of this is how we deal with sensitive information, like database connection strings, API keys, or AAD client secrets.
-The approach we're using is to store those in Key Vault instances, which can be accessed by the applications that require them, thanks to [Azure managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
+The approach we're using is to store these in Key Vault instances, which can be accessed by the applications that require them, thanks to [Azure managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
 
 In the case of Azure SQL, however, we're using a slighty different technique, by leveraging Azure Active Directory authentication, and more specifically token-based authentication.
 Instead of using a connection string that contains a username and a password, we're using the following strategy:
