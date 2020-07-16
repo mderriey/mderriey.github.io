@@ -1,7 +1,7 @@
 ---
 layout: post
-title: How to connect to Azure SQL with AAD authentication and Managed Identities
-description: How to connect to Azure SQL with AAD authentication and Managed Identities
+title: How to connect to Azure SQL with AAD authentication and Azure managed identities
+description: How to connect to Azure SQL with AAD authentication and Azure managed identities
 ---
 
 # Introduction
@@ -9,17 +9,24 @@ description: How to connect to Azure SQL with AAD authentication and Managed Ide
 We're trying to improve the security posture of our internal applications.
 
 One aspect of this is how we deal with sensitive information, like database connection strings, API keys, or AAD client secrets.
-The approach we're using is to store those in Key Vault instances, which can be accessed by the applications that require them, thanks to Azure Managed Identities.
+The approach we're using is to store these in Key Vault instances, which can be accessed by the applications that require them, thanks to [Azure managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
 
-In the case of Azure SQL, however, instead of storing the connection string in Key Vault, we've also started using Managed Identities.
-Instead of having a connection string with a SQL username and password, we use the application's identity to connect to Azure SQL directly.
+In the case of Azure SQL, however, we're using a slighty different technique, by leveraging Azure Active Directory authentication, and more specifically token-based authentication.
+Instead of using a connection string that contains a username and a password, we're using the following strategy:
+
+1. If not done already, assign a managed identity to the application in Azure;
+1. Grant the necessary permissions to this identity on the target Azure SQL database;
+1. Acquire a token from Azure Active Directory, and use it to establish the connection to the database.
+
+The main benefit comes from the fact that we don't need to manage and protect the credentials required to connect to the database.
 We think this is more secure, because the less sensitive information to protect, the less chance of them being accessed by unauthorised parties.
+After all, isn't the best password one that doesn't exist in the first place?
 
-In this post, we'll talk about how one can connect to Azure SQL using Azure Active Directory authentication, and how to do so using Entity Framework Core.
+In this post, we'll talk about how one can connect to Azure SQL using token-based Azure Active Directory authentication, and how to do so using Entity Framework Core.
 
 ## Connecting to Azure SQL using Azure Active Directory authentication
 
-As mentioned before, this approach doesn't use the traditional approach of having a connection string that contains a username and a password.
+As mentioned before, this approach doesn't use the traditional way of having a connection string that contains a username and a password.
 Instead, the credentials are replaced with an access token, much like you would use when you call an API.
 Here's a simple example:
 
@@ -55,13 +62,14 @@ private static async Task<string> GetAzureSqlAccessToken()
 }
 ```
 
-As previously mentioned, the connection string doesn't contain a username or a password, but an access token.
+As previously mentioned, the connection string doesn't contain a username or a password, only the Azure SQL instance and database we want to connect to.
+The authentication is performed via an access token that we associate with the SQL connection.
 
 Acquiring the token is done with the help of the [Azure.Identity NuGet package](https://www.nuget.org/packages/Azure.Identity/) through the `DefaultAzureCredential` class.
 The killer feature of that class is, that it tries to acquire an access token from different sources, including:
 
 - Using credentials exposed through environment variables;
-- Using credentials of an Azure Managed Identity;
+- Using credentials of an Azure managed identity;
 - Using the account that is logged in to Visual Studio;
 - Using the account that is logged in to the Visual Studio Code Azure Account extension.
 
@@ -124,17 +132,17 @@ public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
         var connectionStringBuilder = new SqlConnectionStringBuilder(sqlConnection.ConnectionString);
         if (connectionStringBuilder.DataSource.Contains("database.windows.net", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(connectionStringBuilder.UserID))
         {
-            sqlConnection.AccessToken = await GetAzureSqlAccessToken();
+            sqlConnection.AccessToken = await GetAzureSqlAccessToken(cancellationToken);
         }
 
         return await base.ConnectionOpeningAsync(connection, eventData, result, cancellationToken);
     }
 
-    private static async Task<string> GetAzureSqlAccessToken()
+    private static async Task<string> GetAzureSqlAccessToken(CancellationToken cancellationToken)
     {
         // See https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/services-support-managed-identities#azure-sql
         var tokenRequestContext = new TokenRequestContext(new[] { "https://database.windows.net//.default" });
-        var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext);
+        var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, cancellationToken);
 
         return tokenRequestResult.Token;
     }
@@ -247,7 +255,7 @@ public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
         {
             try
             {
-                sqlConnection.AccessToken = await GetAzureSqlAccessToken();
+                sqlConnection.AccessToken = await GetAzureSqlAccessToken(cancellationToken);
                 _logger.LogInformation("Successfully acquired a token to connect to Azure SQL");
             }
             catch (Exception e)
@@ -263,7 +271,7 @@ public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
         return await base.ConnectionOpeningAsync(connection, eventData, result, cancellationToken);
     }
 
-    private static async Task<string> GetAzureSqlAccessToken()
+    private static async Task<string> GetAzureSqlAccessToken(CancellationToken cancellationToken)
     {
         if (RandomNumberGenerator.GetInt32(10) >= 5)
         {
@@ -272,7 +280,7 @@ public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
 
         // See https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/services-support-managed-identities#azure-sql
         var tokenRequestContext = new TokenRequestContext(new[] { "https://database.windows.net//.default" });
-        var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext);
+        var tokenRequestResult = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, cancellationToken);
 
         return tokenRequestResult.Token;
     }
