@@ -168,13 +168,12 @@ I found a way by reverse engineering how EF Core itself is built.
 However, as you'll see, the solution is quite involved, and I haven't fully tested it.
 As a result, please carefully test it before using this method.
 
-When configuring the `DbContext`, we can register an extension which has access to the internal service provider, hence can register additional services, in this case our interceptor.
+When configuring the `DbContext`, we can register an extension which has access to the internal service provider; hence, we can use it to register additional services, in this case our interceptor.
 However, this internal provider doesn't have as many registered services as a provider used in an ASP.NET Core application.
+For example, this provider doesn't have the commonly used `ILogger<T>` service registered.
 
-A good example of that is related to logging.
-When trying to inject an instance of `ILogger<T>` in the interceptor, an exception was raised as it couldn't be resolved.
-Some more spelunking showed that we need to need to inject an intermediate `ILoggerFactory`; however, it's registered as a scoped service in the internal EF Core provider, where it's usually registered as a singleton in ASP.NET Core apps.
-This meant that the interceptor needs to be registered as a scoped service as well, otherwise the resolution of the logger factory failed.
+Our goal is then to register our interceptor in the internal provider, but somehow have it be resolved from the application provider, so we can take advantage of all the services registered in the latter.
+To achieve this, we can leverage an extension provided by EF Core, called `CoreOptionsExtension`, which has a reference to the application service provider &mdash; the one we use to register services in the `ConfigureServices` method of the `Startup` class of ASP.NET Core applications.
 
 The following implementation is based on the internal [`CoreOptionsExtension`](https://github.com/dotnet/efcore/blob/release/3.1/src/EFCore/Infrastructure/CoreOptionsExtension.cs) used in EF Core.
 
@@ -190,6 +189,10 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        // 1. Register our interceptor as "itself"
+        services.AddScoped<AadAuthenticationDbConnectionInterceptor>();
+
+        // 2. Add our extension to EF Core
         services.AddDbContext<AppDbContext>(options =>
         {
             options.UseSqlServer(Configuration.GetConnectionString("<connection-string-name"));
@@ -206,7 +209,18 @@ public class AppOptionsExtension : IDbContextOptionsExtension
 
     public void ApplyServices(IServiceCollection services)
     {
-        services.AddScoped<IInterceptor, AadAuthenticationDbConnectionInterceptor>();
+        // 3. Get application service provider from CoreOptionsExtension, and
+        // resolve interceptor registered in step 1, so we can register it in the
+        // internal service provider as IInterceptor
+        services.AddScoped<IInterceptor>(provider =>
+        {
+            var applicationServiceProvider = provider
+                .GetRequiredService<IDbContextOptions>()
+                .FindExtension<CoreOptionsExtension>()
+                .ApplicationServiceProvider;
+
+            return applicationServiceProvider.GetRequiredService<AadAuthenticationDbConnectionInterceptor>();
+        });
     }
 
     public void Validate(IDbContextOptions options)
@@ -232,9 +246,11 @@ public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
 {
     private readonly ILogger _logger;
 
-    public AadAuthenticationDbConnectionInterceptor(ILoggerFactory loggerFactory)
+    // In this case we inject an instance of ILogger<T>, but you could inject any service
+    // that is registered in your application provider
+    public AadAuthenticationDbConnectionInterceptor(ILogger<AadAuthenticationDbConnectionInterceptor> logger)
     {
-        _logger = loggerFactory.CreateLogger<AadAuthenticationDbConnectionInterceptor>();
+        _logger = logger;
     }
 
     public override async Task<InterceptionResult> ConnectionOpeningAsync(
