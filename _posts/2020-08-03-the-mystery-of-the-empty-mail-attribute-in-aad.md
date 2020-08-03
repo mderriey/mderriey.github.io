@@ -6,7 +6,7 @@ description: A tale of an issue we recently encountered that prevented users fro
 
 # Introduction
 
-At [Telstra Purple](https://purple.telstra.com), we recently launched a new Office 365 tenant.
+At [Telstra Purple](https://purple.telstra.com), we recently launched a new internal Office 365 tenant.
 The main goal was to give employees from different acquisitions made by Telstra through the years a single roof, which would make collaboration easier.
 
 In early June, we onboarded the first 300 users.
