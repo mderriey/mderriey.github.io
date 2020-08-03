@@ -131,12 +131,12 @@ $staffWithoutMailAttribute = Get-AzureADGroupMember -ObjectId $aadStaffGroup.Obj
 foreach ($userWithoutMailAttribute in $staffWithoutMailAttribute) {
 
     #
-    # Like in many organisations, the username and email address are the same.
+    # Like in many organisations, the username and email address are the same
     #
     $userMailbox = Get-Mailbox -Identity $userWithoutMailAttribute.UserPrincipalName
 
     #
-    # 'smtp' means secondary email address, while 'SMTP' means primary email address.
+    # 'smtp' means secondary email address, while 'SMTP' means primary email address
     # See https://docs.microsoft.com/en-us/powershell/module/exchange/set-mailbox
     #
     $secondaryEmailAddress = 'smtp:{0}.forcemailwriteback@purple.telstra.com' -f $userMailbox.Alias
