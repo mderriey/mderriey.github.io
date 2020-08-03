@@ -1,7 +1,7 @@
 ---
 layout: post
 title: The mystery of the empty mail attribute in AAD
-description: A tale of an issue we recently encountered that prevented users from registering for MFA
+description: A tale of an issue we recently encountered that prevented users from registering for SSPR and MFA
 ---
 
 # Introduction
