@@ -107,7 +107,7 @@ My high-level understanding is that the `mail` attribute in AAD is read-only, an
 So how could we get it updated?
 
 My colleague [Rob McLeod](https://github.com/RobFaie) had a great idea: why don't we add an alias to their mailbox, and hope this will trigger Exchange to write that attribute back to AAD?
-We first tested that theory manually through the Exchange admin center on a small number of users, and a few minutes later we gladly found out a few minutes later that the `mail` attribute for these users was populated.
+We first tested that theory manually through the Exchange admin center on a small number of users, and a few minutes later we gladly found out that the `mail` attribute for these users was populated.
 
 We then asked these users to go through the SSPR and MFA registration process again, and it worked 🎉!
 
