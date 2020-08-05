@@ -57,7 +57,7 @@ However, because our directory is configured to enforce self-service password re
 > But wait! If they reset their password already, why do they need to register for SSPR?
 
 I know, right?
-While the automation seeded information against their account to allow them to initally reset their password, Azure Active Directory still needs them to manually register information for self-service password reset.
+While the automation seeded information against their account to allow them to initially reset their password, Azure Active Directory still needs them to manually register information for self-service password reset.
 
 It's now time for our employees to register for self-service password reset and multi-factor authentication.
 The goal here is for users to provide information that will allow them to both reset their password themselves, as well as be able to complete MFA challenges when they sign in.
