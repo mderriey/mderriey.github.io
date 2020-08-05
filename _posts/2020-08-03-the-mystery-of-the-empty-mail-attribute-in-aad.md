@@ -159,7 +159,7 @@ When affected users then reported back they could then complete the process, we 
 
 ## Why this happened in the first place
 
-When Microsoft responded to our support request, we shared our findings with them, but we never found out why the `mail` attribute hadn't initally been populated for these users.
+When Microsoft responded to our support request, we shared our findings with them, but we never found out why the `mail` attribute hadn't initially been populated for these users.
 All the employees have been assigned licenses around the same time and through automation, so there's nothing on our end that we did differently for some of them.
 
 If you're reading this and you have an idea, I'd love for you to [reach out to me on Twitter](https://twitter.com/mderriey).
