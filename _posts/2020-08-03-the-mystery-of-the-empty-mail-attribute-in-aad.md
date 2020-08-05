@@ -47,7 +47,7 @@ The SSPR process then goes like this:
 - Finally, they can choose a new password.
 
 At this stage, the user can log in with their new account.
-However, because our directory is configured to enforce self-service password reset and multi-factor authentication, the first time they use their new password, they will be presented with a sign-in interruption indicating they need to perform additional steps.
+However, because our directory is configured to enforce self-service password reset and multi-factor authentication, the first time they use their new password, they will be presented with a sign-in challenge indicating they need to perform additional steps.
 
 ![AAD sign-in interruption](/public/images/posts/2020-08-04-empty-mail-attribute-in-aad/multi-factor-authentication-initial-prompt.png)
 <small><i>Source: <https://docs.microsoft.com/en-us/azure/active-directory/user-help/multi-factor-authentication-end-user-first-time#open-the-additional-security-verification-page></i></small>
