@@ -43,7 +43,7 @@ Our automation precedes 2 pieces of information from our HR system to ensure tha
 The SSPR process then goes like this:
 
 - A user navigates to <https://aka.ms/sspr> and enters the username they've been communicated;
-- They then need to validate ownership of both the mobile number and the alternate email address associated with their account;
+- They then need to validate ownership of both the mobile number and the alternate email address associated with their account; then
 - Finally, they can choose a new password.
 
 At this stage, the user can log in with their new account.
