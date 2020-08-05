@@ -85,7 +85,7 @@ Let's now discuss how we investigated and fixed this issue.
 ## The investigation
 
 We launched the new tenant during lockdown, while many organisations were moving to the cloud to support remote work.
-There was also an open service advistory impacting some systems.
+There was also an open service advisory impacting some systems.
 
 Associated with the fact that some users could still complete the whole process without any trouble, we thought it was a transient issue, and decided to wait for the next morning.
 Unfortunately, the error persisted the next day, and we opened a support case with Microsoft.
