@@ -74,7 +74,7 @@ During the SSPR and MFA registration, users are required to provide and verify b
 At this stage, some employees would face this issue:
 
 1. They provided their mobile phone number;
-1. They received a code via text;
+1. They received a code via text; then
 1. When keying the code in, the verification wouldn't work.
 
 ![Error faced when verifying the mobile phone number](/public/images/posts/2020-08-04-empty-mail-attribute-in-aad/error-while-verifying-mobile-number.png)
