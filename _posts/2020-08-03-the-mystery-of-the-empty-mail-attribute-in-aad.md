@@ -35,7 +35,7 @@ To achieve this, we leverage the [self-service password reset capability](https:
 It not only allows employees to pick a password themselves when they get onboarded, it also provides them with a way to reset their password if they forget it or get locked out of their account.
 Less helpdesk involvement means it's a win-win situation for everyone.
 
-Our automation pre-seeds 2 pieces of information from our HR system to ensure that only an employee can reset the password for their account:
+Our automation precedes 2 pieces of information from our HR system to ensure that only an employee can reset the password for their account:
 
 - A mobile phone number; and
 - An alternate email address.
