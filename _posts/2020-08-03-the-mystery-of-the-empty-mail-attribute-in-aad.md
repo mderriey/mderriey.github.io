@@ -85,7 +85,7 @@ Let's now discuss how we investigated and fixed this issue.
 ## The investigation
 
 We launched the new tenant during lockdown, while many organisations were moving to the cloud to support remote work.
-There was also an open service advistory impacting some systems.
+There was also an open service advisory impacting some systems.
 
 Associated with the fact that some users could still complete the whole process without any trouble, we thought it was a transient issue, and decided to wait for the next morning.
 Unfortunately, the error persisted the next day, and we opened a support case with Microsoft.
@@ -107,7 +107,7 @@ My high-level understanding is that the `mail` attribute in AAD is read-only, an
 So how could we get it updated?
 
 My colleague [Rob McLeod](https://github.com/RobFaie) had a great idea: why don't we add an alias to their mailbox, and hope this will trigger Exchange to write that attribute back to AAD?
-We first tested that theory manually through the Exchange admin center on a small number of users, and a few minutes later we gladly found out a few minutes later that the `mail` attribute for these users was populated.
+We first tested that theory manually through the Exchange admin center on a small number of users, and a few minutes later we gladly found out that the `mail` attribute for these users was populated.
 
 We then asked these users to go through the SSPR and MFA registration process again, and it worked 🎉!
 
