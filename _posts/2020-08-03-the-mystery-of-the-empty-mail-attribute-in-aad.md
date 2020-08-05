@@ -20,11 +20,11 @@ Let's first discuss what a working onboarding process looks like.
 
 There are two main steps an employee needs to take:
 
-1. Go through the self-service password reset (SSPR) flow to pick a password;
+1. Go through the self-service password reset (SSPR) flow to pick a password; then
 1. Register for SSPR and multi-factor authentication (MFA).
 
 In our case, the impacted users faced an issue during the second phase of the account claiming process.
-Before we dive in the issue, let's expand on the strategy we put in place.
+Before we dive into the issue, let's expand on the strategy we put in place.
 
 ### Self-service password reset
 
