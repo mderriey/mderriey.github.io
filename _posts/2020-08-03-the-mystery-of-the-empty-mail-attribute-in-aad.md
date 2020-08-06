@@ -171,4 +171,6 @@ We then discussed the issue that some users faced when going through the SSPR an
 Next was the manual process to validate and fix the issue.
 Finally, we saw how we automated fixing this issue, to allow the impacted users to get control of their new account.
 
+Thank you to my colleague [Raphael Haddad](https://twitter.com/RaphHaddadAus) for reviewing this post before publishing.
+
 Cheers for making it all the way down here 🙇‍♂️.
