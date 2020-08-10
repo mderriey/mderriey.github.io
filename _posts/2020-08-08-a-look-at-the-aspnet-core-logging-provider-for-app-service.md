@@ -74,9 +74,8 @@ This explains why those entries show up in the Log stream feature of App Service
 
 > [...] information written to files ending in .txt, .log, or .htm that are stored in the /LogFiles directory (d:/home/logfiles) is streamed by App Service.
 
-Another finding is that the settings configured in the App Service logs blade are persisted in a JSON file on the App Service file system, more specifically in the `%HOME%\site\diagnostics\settings.json` file for a Windows App Service.
-This file is loaded [in a separate configuration object](https://github.com/dotnet/extensions/blob/3dc5e9a24865ab84fce6fc078fce4bd7cfcab5c7/src/Logging/Logging.AzureAppServices/src/SiteConfigurationProvider.cs).
-It's worth noting that reload is supported, indicating that logging settings can be updated and picked up by the app without requiring a restart, which is definitely a good thing.
+Another finding is that the settings configured in the App Service logs blade are persisted in a JSON file on the App Service file system, more specifically in the `%HOME%\site\diagnostics\settings.json` file for a Windows App Service, which is loaded [in a separate configuration object](https://github.com/dotnet/extensions/blob/3dc5e9a24865ab84fce6fc078fce4bd7cfcab5c7/src/Logging/Logging.AzureAppServices/src/SiteConfigurationProvider.cs).
+It's worth noting that reload is enabled, indicating that logging settings can be updated and picked up by the app without requiring a restart, which is definitely a good thing.
 
 Here's what the structure of this file looks like:
 
@@ -115,10 +114,10 @@ However, filters can also be defined in code, which is the method used by the Ap
 After loading the logging configuration from the JSON file, a new filter is added to the global configuration with the following settings:
 
 - It only applies to the `FileLoggerProvider`, which is the one responsible to writing log entries to the file system;
-- No category or namespace is specified, meaning all log entries will be matched; but
+- No category or namespace is specified, meaning all log entries will be matched; and
 - A minimum level is configured, based on the value of the `AzureDriveTraceLevel` property.
 
-See below an extract of the code, which may help in putting the pieces together:
+See below an extract of the code, which may help put the pieces together:
 
 ```csharp
 public static class AzureAppServicesLoggerFactoryExtensions
@@ -176,7 +175,7 @@ We've established earlier in the post that changes to the logging configuration 
 However, the code shown above doesn't exhibit any dynamic capability: the filtering rule is added to the configuration once, with whatever minimum level is configured when that specific code is executed.
 How can the provider then dynamically adjust to logging configuration changes?
 
-The answer lies in the fact that the [options system in ASP.NET Core](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options) supports change notifications and reloadable configuration through the `IOptionsMonitor<T>` interface, as mentioned [in the official documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-3.1#options-interfaces).
+The answer lies in the fact that the options system in ASP.NET Core supports change notifications and reloadable configuration through the `IOptionsMonitor<T>` interface, as mentioned [in the official documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-3.1#options-interfaces).
 We can register change token sources that will be listened to by the default implementation `OptionsMonitor<T>`, and every time a change notification is fired, the specific options value will be created from scratch.
 See this excerpt of code taken [from GitHub](https://github.com/dotnet/extensions/blob/181247dd9c17090dab467abc90d51dfbc947dd3d/src/Options/Options/src/OptionsMonitor.cs#L22-L54):
 
@@ -310,9 +309,9 @@ public TOptions Create(string name)
 }
 ```
 
-### How the logging system is aware of options changes
+### How the logging system is made aware of options changes
 
-The logging system supports changes to the logging options by internally using an instance of `IOptionsMonitor<LoggerFilterOptions>`, and subscribing to its changes, triggering a reevaluation of which filters need to be applied.
+The logging system supports changes to the logging options by internally using an instance of `IOptionsMonitor<LoggerFilterOptions>` and subscribing to its changes, which when fired will trigger a reevaluation of which filters need to be applied.
 Without going into the filter selection logic, this piece of code from the `LoggerFactory` class reveals how it subscribes to changes:
 
 ```csharp
@@ -346,12 +345,12 @@ We now have all the pieces to understand how it all works, as we have establishe
 1. In the Azure portal or through the Azure CLI, we make a change to the logging configuration on our App Service instance;
 1. The new configuration settings are persisted in a JSON file on the App Service file system;
 1. The configuration system loads up the new settings from the updated file and triggers a change notification;
-1. This configuration change notification is also picked up by the options system through the configuration-to-options adapter, which triggers a rebuild of the `LoggerFilterOptions` value;
+1. This configuration change is also picked up by the options system through the configuration-to-options adapter, which triggers a rebuild of the `LoggerFilterOptions` value;
 1. The options system executes all the registered configuration actions for `LoggerFilterOptions`;
-1. One of these configuration actions, as seen earlier, adds a logging filtering rule for the file system logging provider, using the minimum log level option configured in step 1;
+1. One of these configuration actions, as seen earlier, adds a logging filtering rule for the file system logging provider, using the new minimum log level option configured in step 1;
 1. The options system notifies change subscribers about the new constructed value;
-1. The logging stack handles that notification and refreshes its filters; and finally
-1. The filter that targets the App Service file system logging provider ensures only entries with a matching log level get written to disk.
+1. The logging stack, which is a subscriber of changes to logging options, triggers a refresh of its filters; and finally
+1. The new filter that targets the App Service file system logging provider ensures only entries with a matching log level get written to disk.
 
 Phew.
 We made it 🎉!
@@ -362,7 +361,7 @@ Or did we?
 Let's remember what my mate Stafford was unhappy about: his application log entries were shown in Log stream, but because the log filter didn't specify a namespace or category, the output was cluttered with entries coming from MVC, making the troubleshooting easier.
 The good news is that thanks to our understanding of how it all works, we can help Stafford!
 
-The code in this sample is available on GitHub in my [`mderriey/aspnet-core-logging-provider-for-app-service` repository](https://github.com/mderriey/aspnet-core-logging-provider-for-app-service).
+The code in this sample is available on GitHub on my [`mderriey/aspnet-core-logging-provider-for-app-service` repository](https://github.com/mderriey/aspnet-core-logging-provider-for-app-service).
 
 The solution I came up with is to add a post-configuration step for logging options, and replace the default filtering rule added by the App Service file system logging provider.
 The two new rules we're adding still only apply to this specific logging provider, but have different category and log level properties:
@@ -398,7 +397,7 @@ As discussed earlier, the App Service logging provider is only enabled when the 
 We can simulate running in that environment by settings these in the `lauchSettings.json` file.
 I'm using IIS Express, so I added them to the appropriate profile, but you can add them to the other if you run the app on Linux or through `dotnet run`:
 
-```json
+```diff
 {
   "iisSettings": {
     "windowsAuthentication": false,
@@ -414,8 +413,8 @@ I'm using IIS Express, so I added them to the appropriate profile, but you can a
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "HOME": "<replace-with-the-absolute-path-to-the-home-directory-of-the-git-repository>",
-        "WEBSITE_SITE_NAME": "AspNetCoreLoggingProviderForAppService.Web"
++       "HOME": "<replace-with-the-absolute-path-to-the-home-directory-of-the-git-repository>",
++       "WEBSITE_SITE_NAME": "AspNetCoreLoggingProviderForAppService.Web"
       }
     },
     "AspNetCoreLoggingProviderForAppService.Web": {
@@ -430,7 +429,7 @@ I'm using IIS Express, so I added them to the appropriate profile, but you can a
 }
 ```
 
-The other configuration that is requires is the JSON file from which the logging configuration is loaded from.
+The other configuration that is required is the JSON file from which the logging configuration is loaded from.
 We've seen that this file is loaded from `%HOME%\site\diagnostics\settings.json`, so let's create it in the appropriate location.
 The example below enabled logging to the file system, with a minimum log level of Information:
 
@@ -477,7 +476,7 @@ public class HomeController : Controller
 If we run the app without our post-configuration action on the logging options and hit the home page, we can see that a text file has been created at `%HOME%\LogFiles\Application\diagnostics-yyyyMMdd.txt`, which certifies our emulation of running in App Service is correctly picked up.
 Looking at the content of the file, we can see many entries, and they confirm two things.
 First, all entries have a log level of Information or higher, so the `AzureDriveTraceLevel` property is respected.
-Also, we notice many entries that originate from framework-level code.
+We can also notice many entries that originate from framework-level code:
 
 ```text
 2020-08-09 15:59:09.860 +10:00 [Information] Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager: User profile is available. Using 'C:\Users\me\AppData\Local\ASP.NET\DataProtection-Keys' as key repository and Windows DPAPI to encrypt keys at rest.
@@ -500,7 +499,7 @@ Also, we notice many entries that originate from framework-level code.
 Let's now add back our post-configuration action, and run the app again.
 Success 🎉!
 All the framework-level entries have disappeared, because they had a log level lower than Error.
-However, our custom log entries are still written to the file as expected.
+However, our custom log entries are still written to the file as expected:
 
 ```text
 2020-08-09 16:09:26.299 +10:00 [Information] AspNetCoreLoggingProviderForAppService.Web.Controllers.HomeController: Emitting log entry with level Information while executing view Index
@@ -524,9 +523,7 @@ First, thank you for making it all the way down here.
 This is easily the longest post I've written, and I sincerely appreciate you read all of it.
 
 In this post, we first discussed what the ASP.NET Core logging provider for App Service is, what it does, and how to enable it in your application.
-
 We then analysed its implementation, and discovered it uses built-in capabilities of many foundational parts of ASP.NET Core, such as the configuration and options systems, as well as the primitives used for change notifications.
-
 After putting all the pieces together, we came up with a solution to customise which log entries are written to disk and output by App Service Log stream, and found a way to validate that it is working locally.
 
 If you have any questions or comments, please [let me know on Twitter](https://twitter.com/mderriey)!
