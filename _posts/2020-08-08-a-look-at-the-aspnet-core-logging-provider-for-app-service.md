@@ -70,7 +70,9 @@ The first observation is that this provider is only enabled [when the app runs o
 We'll see later how we can take advantage of this to enable it when running the app locally.
 
 The next interesting bit is discovering that the App Service file logger writes log entries to files in the `%HOME%\LogFiles\Application` directory, as seen [in the code](https://github.com/dotnet/extensions/blob/3dc5e9a24865ab84fce6fc078fce4bd7cfcab5c7/src/Logging/Logging.AzureAppServices/src/FileLoggerConfigureOptions.cs#L23).
-This explains why those entries show up in the Log stream feature of App Service, as the official documentation points out that "information written to files ending in .txt, .log, or .htm that are stored in the /LogFiles directory (d:/home/logfiles) is streamed by App Service" ([source](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs#stream-logs)).
+This explains why those entries show up in the Log stream feature of App Service, as the [official documentation points out](https://docs.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs#stream-logs) that:
+
+> [...] information written to files ending in .txt, .log, or .htm that are stored in the /LogFiles directory (d:/home/logfiles) is streamed by App Service.
 
 Another finding is that the settings configured in the App Service logs blade are persisted in a JSON file on the App Service file system, more specifically in the `%HOME%\site\diagnostics\settings.json` file for a Windows App Service.
 This file is loaded [in a separate configuration object](https://github.com/dotnet/extensions/blob/3dc5e9a24865ab84fce6fc078fce4bd7cfcab5c7/src/Logging/Logging.AzureAppServices/src/SiteConfigurationProvider.cs).
