@@ -522,6 +522,8 @@ Without stopping the app, let's modify the the `%HOME%\site\diagnostics\settings
 First, thank you for making it all the way down here.
 This is easily the longest post I've written, and I sincerely appreciate you read all of it.
 
+I also want to thank [Stafford](https://twitter.com/staff0rd) for reviewing this post before publishing.
+
 In this post, we first discussed what the ASP.NET Core logging provider for App Service is, what it does, and how to enable it in your application.
 We then analysed its implementation, and discovered it uses built-in capabilities of many foundational parts of ASP.NET Core, such as the configuration and options systems, as well as the primitives used for change notifications.
 After putting all the pieces together, we came up with a solution to customise which log entries are written to disk and output by App Service Log stream, and found a way to validate that it is working locally.
