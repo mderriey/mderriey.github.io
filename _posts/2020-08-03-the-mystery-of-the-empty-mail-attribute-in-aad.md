@@ -119,7 +119,7 @@ Because we didn't want to manually add a secondary email address to the mailbox 
 Connect-AzureAD
 Connect-ExchangeOnline
 
-$aadStaffGroupName = '<name-of-group-containing-all-staff'
+$aadStaffGroupName = '<name-of-group-containing-all-staff>'
 $aadStaffGroup = Get-AzureADGroup -SearchString $aadStaffGroupName
 
 #
