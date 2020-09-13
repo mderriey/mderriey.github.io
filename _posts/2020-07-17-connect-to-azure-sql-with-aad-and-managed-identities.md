@@ -92,6 +92,12 @@ Using the decompiler of your choice &mdash; [ILSpy](https://github.com/icsharpco
 The `DbConnectionInterceptor` type seems like a fit.
 Luckily, it exposes a [`ConnectionOpeningAsync`](https://docs.microsoft.com/en-us/dotnet/api/microsoft.entityframeworkcore.diagnostics.dbconnectioninterceptor.connectionopeningasync?view=efcore-3.1#Microsoft_EntityFrameworkCore_Diagnostics_DbConnectionInterceptor_ConnectionOpeningAsync_System_Data_Common_DbConnection_Microsoft_EntityFrameworkCore_Diagnostics_ConnectionEventData_Microsoft_EntityFrameworkCore_Diagnostics_InterceptionResult_System_Threading_CancellationToken_) method which sounds just like what we need!
 
+> ⚠ **Update**
+>
+> If you use synchronous methods over your `DbContext` instance, like `ToList`, `Count()`, or `Any()`, you need to override the synchronous `ConnectionOpening` method of the interceptor.
+>
+> See more details in [this new post](/2020/09/12/resolve-ef-core-interceptors-with-dependency-injection/#:~:text=The%20potential%20need%20to%20override%20both%20asynchronous%20and%20synchronous%20methods%20on%20interceptors)!
+
 Let's get to it, shall we?
 
 ```csharp
@@ -158,6 +164,13 @@ During local development, there's a high chance developers will connect to a loc
 Imagine also that for some reason, we revert back to using a connection string that contains a username and password; in that case as well, getting a token is not needed.
 
 ## Going further: resolving interceptors with Dependency Injection
+
+> ⚠ **Update**
+>
+> Good news!
+> There's a much simpler and terser solution to resolve interceptors from the dependency injection container &mdash; please check out [this new post](/2020/09/12/resolve-ef-core-interceptors-with-dependency-injection).
+>
+> I strongly recommend that you not use the solution described below, as it involves much more code and hasn't been fully tested.
 
 Interceptors are a great feature, but at the time of writing, the public API only allows you to add already constructed instances, which can be limiting.
 What if our interceptor needs to take dependencies on other services?
