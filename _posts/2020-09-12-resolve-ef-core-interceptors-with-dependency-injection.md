@@ -143,9 +143,64 @@ When interacting with the `DbContext` using asynchronous methods like `ToListAsy
 However, when using their synchronous counterparts, the synchronous `ConnectionOpening` method will be called internally.
 I didn't realise this in the first project I introduced interceptors in simply because this code base was consistently using asynchronous methods of the `DbContext`.
 
-Fortunately, this was a simple fix as the two dependencies I was using were exposing synchronous methods as well.
-The first one is the [`TokenCredential` class](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/core/Azure.Core/src/TokenCredential.cs) from the Azure.Core NuGet package, that I leverage to get an access token to connect to Azure SQL.
-The second one is the `IMemoryCache` interface, used to cache access tokens, which has both a `GetOrCreate` and `GetOrCreateAsync` extension methods defined against it.
+Fortunately, this was a simple fix as the [`TokenCredential` class](https://github.com/Azure/azure-sdk-for-net/blob/master/sdk/core/Azure.Core/src/TokenCredential.cs) from the Azure.Core NuGet package, that I leveraged to get an access token to connect to Azure SQL, exposes both a synchronous and asynchronous method to acquire a token.
+After making the change, the interceptor looks like below:
+
+```csharp
+public class AadAuthenticationDbConnectionInterceptor : DbConnectionInterceptor
+{
+    // See https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/services-support-managed-identities#azure-sql
+    private static readonly string[] _azureSqlScopes = new[]
+    {
+        "https://database.windows.net//.default"
+    };
+
+    public override async Task<InterceptionResult> ConnectionOpeningAsync(
+        DbConnection connection,
+        ConnectionEventData eventData,
+        InterceptionResult result,
+        CancellationToken cancellationToken)
+    {
+        var sqlConnection = (SqlConnection)connection;
+        if (ConnectionNeedsAccessToken(sqlConnection))
+        {
+            var tokenRequestContext = new TokenRequestContext(_azureSqlScopes);
+            var token = await new DefaultAzureCredential().GetTokenAsync(tokenRequestContext, cancellationToken);
+            sqlConnection.AccessToken = token.Token;
+        }
+
+        return await base.ConnectionOpeningAsync(connection, eventData, result, cancellationToken);
+    }
+
+    public override InterceptionResult ConnectionOpening(
+        DbConnection connection,
+        ConnectionEventData eventData,
+        InterceptionResult result)
+    {
+        var sqlConnection = (SqlConnection)connection;
+        if (ConnectionNeedsAccessToken(sqlConnection))
+        {
+            var tokenRequestContext = new TokenRequestContext(_azureSqlScopes);
+            var token = new DefaultAzureCredential().GetToken(tokenRequestContext);
+            sqlConnection.AccessToken = token.Token;
+        }
+
+        return base.ConnectionOpening(connection, eventData, result);
+    }
+
+    private static bool ConnectionNeedsAccessToken(SqlConnection connection)
+    {
+        //
+        // Only try to get a token from AAD if
+        //  - We connect to an Azure SQL instance; and
+        //  - The connection doesn't specify a username.
+        //
+        var connectionStringBuilder = new SqlConnectionStringBuilder(connection.ConnectionString);
+
+        return connectionStringBuilder.DataSource.Contains("database.windows.net", StringComparison.OrdinalIgnoreCase) && string.IsNullOrEmpty(connectionStringBuilder.UserID);
+    }
+}
+```
 
 ## Conclusion
 
