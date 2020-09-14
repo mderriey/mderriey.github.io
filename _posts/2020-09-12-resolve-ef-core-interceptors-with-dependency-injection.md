@@ -208,4 +208,6 @@ In this post, we first looked at a much simper and terser option to resolve our 
 We then briefly discussed the lifetime scopes we can use for both our interceptors and their dependencies without running into issues.
 Finally, we discovered that in some cases, we need to override both the synchronous and asynchronous methods of our interceptors.
 
+I want to thank my colleague Sam Piper who reviewed this post before publishing.
+
 Thanks ✌
