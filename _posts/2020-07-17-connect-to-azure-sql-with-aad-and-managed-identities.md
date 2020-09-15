@@ -94,7 +94,7 @@ Luckily, it exposes a [`ConnectionOpeningAsync`](https://docs.microsoft.com/en-u
 
 > ⚠ **Update**
 >
-> If you use synchronous methods over your `DbContext` instance, like `ToList`, `Count()`, or `Any()`, you need to override the synchronous `ConnectionOpening` method of the interceptor.
+> If you use synchronous methods over your `DbContext` instance, like `ToList()`, `Count()`, or `Any()`, you need to override the synchronous `ConnectionOpening` method of the interceptor.
 >
 > See more details in [this new post](/2020/09/12/resolve-ef-core-interceptors-with-dependency-injection/#:~:text=The%20potential%20need%20to%20override%20both%20asynchronous%20and%20synchronous%20methods%20on%20interceptors)!
 
