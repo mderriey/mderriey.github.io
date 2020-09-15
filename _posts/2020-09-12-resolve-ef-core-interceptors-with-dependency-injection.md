@@ -127,7 +127,7 @@ I initially thought that the options associated with a `DbContext` were built on
 However, it turns out that both the `DbContext` instance and its options are by default registered as scoped services.
 In an ASP.NET Core application, it translates to new instances being constructed for each HTTP request.
 
-The implication is that should we need it, our interceptors can be registered as scoped services without causing a [captive dependency problem](https://blog.ploeh.dk/2014/06/02/captive-dependency/), which is when a service with a "longer" lifetime,like a singleton, takes a dependency on a service with a "shorter" lifetime, like a scoped service.
+The implication is that should we need it, our interceptors can be registered as scoped services without causing a [captive dependency problem](https://blog.ploeh.dk/2014/06/02/captive-dependency/), which is when a service with a "longer" lifetime, like a singleton, takes a dependency on a service with a "shorter" lifetime, like a scoped service.
 Naturally, the same principle applies to the dependencies of our interceptors as well.
 
 I'm yet to run into a situation where I need an interceptor to be defined as a scoped service, but it's good to know it's a possible option.
@@ -140,7 +140,7 @@ After introducing an AAD authentication interceptor in another project, I found 
 I thought I had run into a bug, and started working on a minimal repro so I could open an issue on the EF Core GitHub repository.
 While doing so, I realised it wasn't a bug, but a misconception on my part.
 
-When interacting with the `DbContext` using asynchronous methods like `ToListAsync()`, `CountAsync`, and `AnyAsync`, EF Core will invoke the `ConnectionOpeningAsync` method on the registered interceptor.
+When interacting with the `DbContext` using asynchronous methods like `ToListAsync()`, `CountAsync()`, and `AnyAsync()`, EF Core will invoke the `ConnectionOpeningAsync` method on the registered interceptor.
 However, when using their synchronous counterparts, the synchronous `ConnectionOpening` method will be called internally.
 I didn't realise this in the first project I introduced interceptors in simply because this code base was consistently using asynchronous methods of the `DbContext`.
 
