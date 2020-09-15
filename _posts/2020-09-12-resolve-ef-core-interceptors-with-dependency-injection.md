@@ -21,8 +21,9 @@ Let's get to it.
 
 ## How to resolve EF Core interceptors from the dependency injection container
 
-It's actually embarassing, given how straightforward it is.
+Leveraging the service provider can be beneficial if the interceptor takes dependencies on other services, like a cache for the access tokens or an instance of `ILogger`.
 
+The solution is actually embarassing given how straightforward it is.
 While going through the different overloads of the `AddDbContext` method, I realised that several of them were accepting a delegate parameter that was given an instance of `IServiceProvider`.
 That's great news, as it means we can have access to the application service provider while configuring the `DbContext` options.
 
