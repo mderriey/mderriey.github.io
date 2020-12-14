@@ -10,9 +10,10 @@ Swashbuckle is a fantastic .NET library that enables developers to generate Swag
 
 It also bundles [swagger-ui](https://swagger.io/tools/swagger-ui/) which is a tool that allows developers and API consumers to visualise the definition of an API by using the JSON-based OpenAPI document.
 
-Unfortunately, out of the box, swagger-ui is not CSP-friendly as it uses inline `<script>` and `<style>` tags, which are insecure.
+Unfortunately, out of the box, swagger-ui uses inline `<script>` and `<style>` tags, which are considered insecure as it means attackers might be able to run arbitrary code in your app through a cross-site scripting (XSS) vulnerability.
+See this Google article for more information: <https://developers.google.com/web/fundamentals/security/csp/#inline_code_is_considered_harmful>
 
-Let's see how we can work around this issue to keep a strict content security policy in our application.
+Let's see how we can work around this issue to keep a strict content security policy that disallows inline tags in our application.
 
 As a note, this post will make use of the fantastic `NetEscapades.AspNetCore.SecurityHeaders` NuGet package, developed by Andrew Lock, which offers a strongly-typed API to work with security-related headers, CSP being one of those.
 Check it out at <https://github.com/andrewlock/NetEscapades.AspNetCore.SecurityHeaders>.
