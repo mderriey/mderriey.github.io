@@ -8,21 +8,23 @@ description: In this post we go through the adjustments we need to make to our a
 
 Swashbuckle is a fantastic .NET library that enables developers to generate Swagger- and OpenAPI-compliant documentation for their APIs.
 
-It also bundles [swagger-ui](https://swagger.io/tools/swagger-ui/) which is a tool that allows developers and API consumers to visualise the definition of an API by using the JSON-based OpenAPI document.
+It also bundles [swagger-ui](https://swagger.io/tools/swagger-ui/), a tool that allows developers and API consumers to visualise the definition of an API by using the generated JSON OpenAPI document.
 
-Unfortunately, out of the box, swagger-ui uses inline `<script>` and `<style>` tags, which are considered insecure as it means attackers might be able to run arbitrary code in your app through a cross-site scripting (XSS) vulnerability.
+Unfortunately, out of the box, swagger-ui uses inline `<script>` and `<style>` tags, which are considered insecure as they can allow attackers to run arbitrary code in an application through a cross-site scripting (XSS) vulnerability.
 See this Google article for more information: <https://developers.google.com/web/fundamentals/security/csp/#inline_code_is_considered_harmful>
 
-Let's see how we can work around this issue to keep a strict content security policy that disallows inline tags in our application.
+Let's see how we can work around this issue and keep a strict content security policy that disallows inline tags in our application.
 
-As a note, this post will make use of the fantastic `NetEscapades.AspNetCore.SecurityHeaders` NuGet package, developed by Andrew Lock, which offers a strongly-typed API to work with security-related headers, CSP being one of those.
+As a note, this post uses the fantastic `NetEscapades.AspNetCore.SecurityHeaders` NuGet package developed by Andrew Lock.
+It offers a strongly-typed API to work with security-related headers, CSP being one of them.
 Check it out at <https://github.com/andrewlock/NetEscapades.AspNetCore.SecurityHeaders>.
 
 ## The `index.html` file
 
 The main page for swagger-ui is driven by the `index.html` file and its CSS and JavaScript resources.
-Because Swashbuckle exposes configuration options for swagger-ui, the content of the file might need to change from an application to another, or simply from an environment to another.
-As a result, Swashbuckle maintain their own copy of the `index.html` file, in which we can find tokens that get replaced at runtime.
+Swashbuckle exposes configuration options for swagger-ui.
+Developers can leverage that capability to change the content of the file from one application to another, or simply from one environment to another.
+To support this, Swashbuckle maintain their own copy of the `index.html` file, in which we can find tokens that get replaced at runtime.
 See the several `%(<property-name>)` tokens on GitHub: <https://github.com/domaindrivendev/Swashbuckle.AspNetCore/blob/98a7dfe0f7ca2aa66c6daa029c3987490bd1eb20/src/Swashbuckle.AspNetCore.SwaggerUI/index.html>.
 
 From a CSP perspective, the first two issues are the inline `<script>` tag and both the inline `<script>` tags.
@@ -30,14 +32,15 @@ From a CSP perspective, the first two issues are the inline `<script>` tag and b
 To remediate those, CSP offers two options:
 
 1. Allowing the hashes of the contents of the inline `<script>` and `<style>` tags (see <https://scotthelme.co.uk/csp-cheat-sheet/#hashes>); or
-1. Specifying a `nonce` attribute on the inline tags, while allowing it in the content security policy; for obvious reasons, the allowed nonce must be randomly generated and change for every single HTTP request (see <https://scotthelme.co.uk/csp-cheat-sheet/#nonces>).
+1. Specifying a `nonce` attribute on the inline tags while allowing it in the content security policy; for obvious reasons, the allowed nonce must be randomly generated and change for every single HTTP request (see <https://scotthelme.co.uk/csp-cheat-sheet/#nonces>).
 
-Using hashes isn't viable here, as the second inline `<script>` tag will contain the JSON representation of our configuration, which could change for each environment we'll deploy to.
-Different values would generate different hashes, which we would all need to allow in our CSP.
+Using hashes isn't viable here as the second inline `<script>` tag will contain the JSON representation of our configuration, which could change for each environment we'll deploy to.
+Different values would generate different hashes, all of which we would need to allow in our CSP.
 Yuck 😧.
 
 The solution lies in using nonces!
-Swashbuckle has an extensibility point which allows to modify the contents of the `index.html` file that will be served though the `SwaggerUIOptions.IndexStream` property.
+Swashbuckle has an extensibility point which allows to modify the contents of the `index.html` file that will be served.
+This is done though the `SwaggerUIOptions.IndexStream` property.
 See <https://github.com/domaindrivendev/Swashbuckle.AspNetCore#customize-indexhtml>.
 The default value is to read the `index.html` file embedded in the assembly:
 
@@ -60,37 +63,40 @@ Instead of sending a completely different `index.html` file, we'll override this
 // Startup.cs
 public void ConfigureServices()
 {
+    // 1. Register IHttpContextAccessor as we use it below
+    services.AddHttpContextAccessor();
+    
     services
         .AddOptions<SwaggerUIOptions>()
         .Configure<IHttpContextAccessor>((swaggerUiOptions, httpContextAccessor) =>
         {
-            // 1. Take a reference of the original Stream factory which reads from Swashbuckle's embedded resources
+            // 2. Take a reference of the original Stream factory which reads from Swashbuckle's embedded resources
             var originalIndexStreamFactory = options.IndexStream;
 
-            // 2. Override the Stream factory
+            // 3. Override the Stream factory
             options.IndexStream = () =>
             {
-                // 3. Read the original index.html file
+                // 4. Read the original index.html file
                 using var originalStream = originalIndexStreamFactory();
                 using var originalStreamReader = new StreamReader(originalStream);
                 var originalIndexHtmlContents = originalStreamReader.ReadToEnd();
 
-                // 4. Get the request-specific nonce generated by NetEscapades.AspNetCore.SecurityHeaders
+                // 5. Get the request-specific nonce generated by NetEscapades.AspNetCore.SecurityHeaders
                 var requestSpecificNonce = httpContextAccessor.HttpContext.GetNonce();
 
-                // 5. Replace inline `<script>` and `<style>` tags by adding a `nonce` attribute to them
+                // 6. Replace inline `<script>` and `<style>` tags by adding a `nonce` attribute to them
                 var nonceEnabledIndexHtmlContents = originalIndexHtmlContents
                     .Replace("<script>", $"<script nonce=\"{requestSpecificNonce}\">", StringComparison.OrdinalIgnoreCase)
                     .Replace("<style>", $"<style nonce=\"{requestSpecificNonce}\">", StringComparison.OrdinalIgnoreCase);
 
-                // 6. Return a new Stream that contains our modified contents
+                // 7. Return a new Stream that contains our modified contents
                 return new MemoryStream(Encoding.UTF8.GetBytes(nonceEnabledIndexHtmlContents));
             };
         });
 }
 ```
 
-The last bit of configuration is to allow nonces for styles and scripts in our CSP:
+The remaining configuration is done in the `Configure` method, to allow nonces for styles and scripts in our CSP:
 
 ```csharp
 public void Configure()
@@ -120,13 +126,14 @@ public void Configure()
 ```
 
 If we access our swagger-ui page again, everything seems to be working fine! 🎉
-Refreshing the page while taking a look at the HTML code, we can see that the `nonce` attribute gets generated on every request.
+If we refresh the page and analyse the HTML code, we can see that the value of `nonce` attributes added to the `<script>` and `<style>` tags changes on every request.
 
-If we look at the DevTools console again, we can see two errors remain related to loading images through the `data` protocol.
-From what I can see, they're related to the Swagger logo in the top left corner and the down-facing arrow in the definition dropdown in the top-right corner.
+If we open our browser developer tools, the console should show two errors related to loading images through the `data` protocol.
+Because this protocol is not allowed in our content security policy, the browser refuses to load them.
+From what I can see, they're related to the Swagger logo in the top-left corner and the down-facing arrow in the definition dropdown in the top-right corner.
 
 As I believe the rest is working fine, I'll let you decide whether you want to allow loading images from `data`, which is considered insecure.
-This bit of code should do:
+If you decide to go ahead, you can use the code below:
 
 ```csharp
 public void Configure()
@@ -187,7 +194,7 @@ The solution we came up with is to hold a slightly modified copy of the `oauth2-
 </script>
 ```
 
-By putting this copy in the `wwwroot/swagger` folder, it'll then be served by our static files middleware instead of by Swashbuckle.
+By putting this copy in the `wwwroot/swagger` folder, it'll then be served by our static files middleware instead of by the Swashbuckle SwaggerUI middleware.
 We can then compute the hash of the contents of the `<script>` tag, and allow it in our content security policy.
 
 However, this is a suboptimal solution for several reasons:
@@ -219,6 +226,7 @@ In this post, we explored how we can keep a fairly strict content security polic
 
 Special thanks to:
 
+- My colleague Mehdi for reviewing this post before publishing;
 - The swagger.io team who creates swagger-ui &mdash; <https://swagger.io/>;
 - The Swashbuckle team for making it a breeze to incorporate these tools in ASP.NET Core apps &mdash; <https://github.com/domaindrivendev/Swashbuckle.AspNetCore>; and
 - Andrew Lock for creating a NuGet package that makes it so easy to set up security-related HTTP headers &mdash; <https://github.com/andrewlock/NetEscapades.AspNetCore.SecurityHeaders>.
