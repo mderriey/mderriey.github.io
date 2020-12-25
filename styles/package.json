@@ -1,0 +1,30 @@
+{
+  "name": "mderriey.github.io",
+  "version": "1.0.0",
+  "description": "This is my blog",
+  "main": "index.js",
+  "scripts": {
+    "build-css": "postcss ./styles.css --output ../public/css/style.css",
+    "build-css:prod": "cross-env NODE_ENV=production npm run build-css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mderriey/mderriey.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mderriey/mderriey.github.io/issues"
+  },
+  "homepage": "https://github.com/mderriey/mderriey.github.io#readme",
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.3.1",
+    "autoprefixer": "^10.1.0",
+    "cross-env": "^7.0.3",
+    "cssnano": "^4.1.10",
+    "postcss": "^8.2.1",
+    "postcss-cli": "^8.3.1",
+    "tailwindcss": "^2.0.2"
+  }
+}

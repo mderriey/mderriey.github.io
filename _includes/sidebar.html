@@ -1,16 +1,14 @@
-<div class="sidebar">
-  <div class="avatar-wrapper">
-    <img class="avatar" src="{{ site.logo }}" alt="Avatar" />
-  </div>
-  <div class="container sidebar-sticky">
-    <div class="sidebar-about">
-      <h1>
+<div class="md:fixed md:min-h-screen md:w-80 lg:w-96 px-10 py-12 bg-gray-800 text-white">
+  <img class="w-40 h-40 m-auto rounded-full md:w-full md:h-full" src="{{ site.logo }}" alt="Avatar" />
+  <div class="mt-6 text-center md:mt-0 md:text-left md:absolute md:right-10 md:bottom-12 md:left-10 lg:mt-6">
+    <div>
+      <h1 class="font-serif font-semibold text-5xl leading-tight sm:text-6xl sm:leading-tight md:text-5xl md:leading-tight lg:text-6xl lg:leading-tight">
         {{ site.title }}
       </h1>
     </div>
 
-    <nav class="sidebar-nav">
-      <a class="sidebar-nav-item{% if page.url == site.baseurl %} active{% endif %}" href="/">Home</a>
+    <nav class="mt-6 md:mt-4 lg:mt-6 grid gap-2 lg:gap-3">
+      <a class="text-md sm:text-xl md:text-md lg:text-xl hover:underline" href="/">Home</a>
 
       {% comment %}
         The code below dynamically generates a sidebar nav of pages with
@@ -21,27 +19,27 @@
       {% for node in pages_list %}
         {% if node.title != null %}
           {% if node.layout == "page" %}
-            <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="{{ node.url }}">{{ node.title }}</a>
+            <a class="text-md sm:text-xl md:text-md lg:text-xl hover:underline" href="{{ node.url }}">{{ node.title }}</a>
           {% endif %}
         {% endif %}
       {% endfor %}
     </nav>
 
-    <ul class="sidebar-social">
-      <a class="sidebar-social-item" href="https://github.com/mderriey" title="GitHub"><i class="fab fa-github"></i></a>
-      <a class="sidebar-social-item" href="https://stackoverflow.com/users/562839/micka%C3%ABl-derriey" title="Stack Overflow"><i class="fab fa-stack-overflow"></i></a>
-      <a class="sidebar-social-item" href="https://twitter.com/mderriey" title="Twitter"><i class="fab fa-twitter"></i></a>
+    <ul class="mt-4 sm:mt-6 md:mt-4 lg:mt-6 flex justify-center md:justify-start">
+      <a class="text-2xl sm:text-3xl md:text-2xl lg:text-3xl" href="https://github.com/mderriey" title="GitHub"><i class="fab fa-github"></i></a>
+      <a class="text-2xl sm:text-3xl md:text-2xl lg:text-3xl ml-6" href="https://stackoverflow.com/users/562839/micka%C3%ABl-derriey" title="Stack Overflow"><i class="fab fa-stack-overflow"></i></a>
+      <a class="text-2xl sm:text-3xl md:text-2xl lg:text-3xl ml-6" href="https://twitter.com/mderriey" title="Twitter"><i class="fab fa-twitter"></i></a>
     </ul>
 
-    <p>&copy; {{ site.time | date: '%Y' }} Mickaël Derriey</p>
+    <p class="mt-4 sm:mt-6 md:mt-4 lg:mt-6 text-xl md:text-base lg:text-xl text-gray-400 font-medium">&copy; {{ site.time | date: '%Y' }} Mickaël Derriey</p>
 
-    <p class="version">
-      Powered by <a href="http://jekyllrb.com">Jekyll</a>
-      and <a href="https://pages.github.com">GitHub Pages</a>
+    <p class="mt-4 sm:mt-6 md:mt-4 lg:mt-6 text-xs text-left text-gray-400">
+      Powered by <a class="text-white hover:underline" href="http://jekyllrb.com">Jekyll</a>
+      and <a class="text-white hover:underline" href="https://pages.github.com">GitHub Pages</a>
       <br />
-      Theme based on <a href="http://hyde.getpoole.com">Hyde</a>
-      by <a href="https://twitter.com/mdo">@mdo</a> with modifications
-      by <a href="https://twitter.com/todthomson">@todthomson</a>
+      Theme based on <a class="text-white hover:underline" href="http://hyde.getpoole.com">Hyde</a>
+      by <a class="text-white hover:underline" href="https://twitter.com/mdo">@mdo</a> with modifications
+      by <a class="text-white hover:underline" href="https://twitter.com/todthomson">@todthomson</a>
     </p>
   </div>
 </div>

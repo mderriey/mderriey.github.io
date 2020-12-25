@@ -6,7 +6,9 @@ plugins:
   - jekyll-paginate
   - jekyll-feed
 
-exclude: [bundle]
+exclude:
+  - bundle
+  - styles
 
 # Permalinks
 permalink:        pretty
