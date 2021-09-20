@@ -92,7 +92,27 @@ We're lucky here because the [`ManagedIdentityTokenProvider`](https://github.com
 In fact, our implementation is very similar, only swapping one library for another.
 
 ```csharp
-TODO
+internal class AzureIdentityTokenProvider : TokenProvider
+{
+    private static readonly string[] _azureServiceBusScopes = new[] { "https://servicebus.azure.net//.default" };
+
+    private readonly TokenCredential _tokenCredential;
+
+    public AzureIdentityTokenProvider(TokenCredential tokenCredential)
+    {
+        _tokenCredential = tokenCredential;
+    }
+
+    public override async Task<SecurityToken> GetTokenAsync(string appliesTo, TimeSpan timeout)
+    {
+        var requestContext = new TokenRequestContext(_azureServiceBusScopes);
+        var tokenResponse = await _tokenCredential.GetTokenAsync(requestContext, default);
+
+        return new JsonSecurityToken(
+            tokenResponse.Token,
+            appliesTo);
+    }
+}
 ```
 
 We tested this and confirmed that it's working as expected.
@@ -102,7 +122,38 @@ We tested this and confirmed that it's working as expected.
 Now that we have all the information, here's a sample showing how to leverage AAD authentication to Azure Service Bus with NServiceBus:
 
 ```csharp
-TODO
+var host = Host.CreateDefaultBuilder(args)
+    .UseNServiceBus(context =>
+    {
+        var endpointConfiguration = new EndpointConfiguration("<endpoint-name>");
+        
+        //
+        // DefaultAzureCredential can be used when running the solution locally
+        // as it will get a token using the account logged in developer tools
+        // like Visual Studio, VS Code, the Azure CLI, or Azure PowerShell.
+        //
+        // ManagedIdentityCredential is used when running in Azure as it's what
+        // we want to use to acquire a token.
+        //
+        var credential = context.HostingEnvironment.IsDevelopment()
+            ? new DefaultAzureCredential(includeInteractiveCredentials: false)
+            : new ManagedIdentityCredential();
+
+        var transport = endpointConfiguration.UseTransport<AzureServiceBusTransport>();
+        transport.ConnectionString("Endpoint=sb://<service-bus-namespace>.servicebus.windows.net/");
+        transport.CustomTokenProvider(new AzureIdentityTokenProvider(credential));
+
+        // Rest of the endpoint configuration
+
+        return endpointConfiguration;
+    })
+    .ConfigureServices(services =>
+    {
+        // Registrations omitted for brevity
+    })
+    .Build();
+
+host.Run();
 ```
 
 ## Conclusion
