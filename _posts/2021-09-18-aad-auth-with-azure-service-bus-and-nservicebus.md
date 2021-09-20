@@ -6,14 +6,14 @@ description: In this post we look at how we can leverage Azure Active Directory 
 
 # Introduction
 
-In an effort to improve the security of our applications, we consistently strive to use Azure Active Directory authentication to Azure services.
+In an effort to improve the security of our applications, we strive to consistently use Azure Active Directory authentication to Azure services.
 
 In doing so, we free ourselves of having to secure sensitive information:
 
 1. AAD authentication relies on tokens the application can acquire at runtime, meaning we don't need access keys or connection strings with passwords.
 1. Thanks to [Azure managed identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview), our applications have access to the necessary credentials when they run in Azure.
 
-We use AAD authentication to connect to a variety of services already: Azure SQL, Azure Blobs and Queues, Azure Key Vault, and App Configuration.
+We already use AAD authentication to connect to a variety of services: Azure SQL, Azure Blobs and Queues, Azure Key Vault, and App Configuration.
 
 We recently investigated how we could do the same to connect to Azure Service Bus.
 
@@ -23,16 +23,16 @@ Instead of integrating directly with Azure Service Bus, we use NServiceBus, whic
 
 - It is transport-agnostic, which means we can run our messaging solutions locally by targetting RabbitMQ with minimal code changes.
 - Reliability and recoverability are built-in concepts, so it is extremely easy to define complex retry policies when a processing error occurs.
-- NServiceBus can audit all processed messages to a centralised location for better traceability and troubleshooting.
+- NServiceBus can audit all processed messages to a centralised location for better traceability and easier troubleshooting.
 
 This also means that we delegate the responsibility of integrating with Azure Service Bus to NServiceBus.
 At the time of writing, the [Azure Service Bus transport NuGet package](https://www.nuget.org/packages/NServiceBus.Transport.AzureServiceBus/) for NServiceBus depends on an older Azure Service Bus client library, Microsoft.Azure.ServiceBus.
 
 A newer library, called Azure.Messaging.ServiceBus, was released a few months back.
-That new library is part of the new Azure SDK, which brings a consistent way to use AAD authentication across all the client libraries thanks to Azure.Identity.
-It's worth nothing that upgrading the NServiceBus transport to the new Azure.Messaging.ServiceBus library is tracked in a GitHub issue over at <https://github.com/Particular/NServiceBus.Transport.AzureServiceBus/issues/361>.
+That library is part of the new Azure SDK, which brings a consistent way to use AAD authentication across all the client libraries thanks to Azure.Identity.
+While we can't use the new library with NServiceBus right now, it's worth nothing that upgrading the Azure Service Bus transport to the new Azure.Messaging.ServiceBus library is tracked in a GitHub issue over at <https://github.com/Particular/NServiceBus.Transport.AzureServiceBus/issues/361>.
 
-We still want to leverage AAD authentication, so we decided to perform a multi-step investigation:
+We still wanted to leverage AAD authentication, so we decided to perform a multi-step investigation:
 
 1. Does Microsoft.Azure.ServiceBus support AAD authentication? If it doesn't, we'll need to wait for the transport to use the new library.
 1. If it does support AAD authentication, does NServiceBus expose the necessary extensilibity points for us to use it?
@@ -47,7 +47,7 @@ Let us perform some detective work.
 We first want to find out whether the Microsoft.Azure.ServiceBus library supports AAD authentication.
 
 Unfortunately, it wasn't as easy as we expected to find out.
-After some searching through the samples looking for specific keywords like AAD, token, or managed identity, we found the [following sample on GitHub](https://github.com/Azure-Samples/app-service-msi-servicebus-dotnet/blob/03be4e05b5803e464d416b66fd729d23bd4220fb/WebAppServiceBus/WebAppServiceBus/Controllers/HomeController.cs#L62-L65):
+After some spelunking through the samples looking for specific keywords like AAD, token, or managed identity, we found the [following sample on GitHub](https://github.com/Azure-Samples/app-service-msi-servicebus-dotnet/blob/03be4e05b5803e464d416b66fd729d23bd4220fb/WebAppServiceBus/WebAppServiceBus/Controllers/HomeController.cs#L62-L65):
 
 ```csharp
 var tokenProvider = TokenProvider.CreateManagedServiceIdentityTokenProvider();
@@ -73,13 +73,13 @@ We're now focussing on the Azure Service Bus transport for NServiceBus.
 
 Much easier this time, as [the documentation page](https://docs.particular.net/transports/azure-service-bus/configuration#connectivity) listing all configuration options for this transport has a "Connectivity" section, indicating that a token provider can be provided.
 
-Two for two for now!
+Two for two for now, let's keep going!
 
 ### Part three
 
 As a reminder, what we're evaluating here is whether we can use Azure.Identity with the Microsoft.Azure.ServiceBus library, which doesn't support it natively.
 
-❓ _Why bother since we found a token provider that can leverage Azure managed identities already_ ❓
+❓ _Why is this important since we found a token provider that can leverage Azure managed identities already_ ❓
 
 That's a good question;
 when we think about it, we could use the built-in token provider.
@@ -88,7 +88,7 @@ However, there's two reasons we want to use Azure.Identity:
 1. The main one is that Microsoft.Azure.Services.AppAuthentication is no longer recommended to use, and Azure.Identity should be used for all new development &mdash; see the [official Microsoft documentation](https://docs.microsoft.com/en-us/dotnet/api/overview/azure/service-to-service-authentication).
 1. The second one is that most our integrations using AAD authentication use Azure.Identity, so it makes sense for us to keep a single ubiquitous library to perform token acquisition.
 
-We're lucky here because the [`ManagedIdentityTokenProvider`](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/servicebus/Microsoft.Azure.ServiceBus/src/Primitives/ManagedIdentityTokenProvider.cs) gives us a great starting point.
+This wasn't complicated since the built-in [`ManagedIdentityTokenProvider`](https://github.com/Azure/azure-sdk-for-net/blob/main/sdk/servicebus/Microsoft.Azure.ServiceBus/src/Primitives/ManagedIdentityTokenProvider.cs) gives us a great starting point.
 In fact, our implementation is very similar, only swapping one library for another.
 
 ```csharp
