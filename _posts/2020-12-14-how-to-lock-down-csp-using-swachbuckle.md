@@ -157,6 +157,11 @@ public void Configure()
 
 ## The `oauth2-redirect.html` file
 
+> **Update on 6 July 2022**
+>
+> See the update block at the bottom of this section if you use Swashbuckle v6.0 or greater for an easier solution.
+> You're still encouraged to read this section to get the necessary context.
+
 The other HTML file you might be using is the `oauth2-redirect.html` file, used by default if you decide to implement an authentication flow from swagger-ui.
 This can be beneficial as it dramatically eases the discovery of the API endpoints.
 
@@ -219,6 +224,15 @@ While that PR was merged and the change was [released in swagger-ui v3.34.0](htt
 
 The hope is that at some point in the future, Swashbuckle will update swagger-ui, we'll update Swashbuckle, the test will fail, and we'll be able to remove our modified copy of the file.
 🤞 it works out!
+
+> **Update on 6 July 2022**
+>
+> Swashbuckle, starting with v6.0, is now bundling a version of swagger-ui that contains the change mentioned above in the pull request we opened.
+>
+> This means that we no longer need to maintain a separate version of the `oauth2-redirect.html` file.
+> However, because the file still contains an inline `<script>` tag, we need to allow its hash in our CSP.
+>
+> It greatly reduces the complexity of the solution, though, as we now only need to ensure that the hash we allow is the correct one, which we do via an automated test.
 
 ## Conclusion
 
