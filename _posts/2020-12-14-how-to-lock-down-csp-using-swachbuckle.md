@@ -159,7 +159,7 @@ public void Configure()
 
 > **Update on 6 July 2022**
 >
-> See the update section at the bottom of this section if you use Swashbuckle v6.0 or greater for an easier solution.
+> See the update block at the bottom of this section if you use Swashbuckle v6.0 or greater for an easier solution.
 > You're still encouraged to read this section to get the necessary context.
 
 The other HTML file you might be using is the `oauth2-redirect.html` file, used by default if you decide to implement an authentication flow from swagger-ui.
