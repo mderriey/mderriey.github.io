@@ -30,5 +30,6 @@ feed:
 # Custom vars
 version:          2.1.0
 
+repository:       mderriey/mderriey.github.io
 github:
   repo:           https://github.com/mderriey/
